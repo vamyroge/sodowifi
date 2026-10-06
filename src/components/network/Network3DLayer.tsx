@@ -132,15 +132,15 @@ const DeviceVisual: React.FC<DeviceMeshProps> = React.memo(({
   let devRotation: [number, number, number] = [0, 0, 0];
   if (device.type === 'camera') {
     const bId = device.location.buildingId;
-    const yaw = bId === 'building-e' ? -Math.PI * 0.25 : bId === 'building-b' ? Math.PI * 0.25 : -Math.PI * 0.75;
+    const yaw = bId === 'building-e' ? -Math.PI * 0.25 : (bId === 'building-b' || bId === 'building-a') ? Math.PI * 0.25 : -Math.PI * 0.75;
     devRotation = [0.45, yaw, 0];
   } else if (device.type === 'pc') {
     const bId = device.location.buildingId;
     // Bàn máy tính đặt ở vách đối diện cửa:
     // Dãy A (corridor -x): PC ở +x -> xoay mặt về -x (về phía cửa) = Math.PI / 2
-    // Dãy B (corridor +x): PC ở -x -> xoay mặt về +x (về phía cửa) = -Math.PI / 2
+    // Dãy B & Dãy C (corridor +x): PC ở -x -> xoay mặt về +x (về phía cửa) = -Math.PI / 2
     // Dãy CD (corridor +y): PC ở -z -> xoay mặt về +z (về phía cửa) = 0
-    const yaw = bId === 'building-e' ? Math.PI * 0.5 : bId === 'building-b' ? -Math.PI * 0.5 : 0;
+    const yaw = bId === 'building-e' ? Math.PI * 0.5 : (bId === 'building-b' || bId === 'building-a') ? -Math.PI * 0.5 : 0;
     devRotation = [0, yaw, 0];
   }
 

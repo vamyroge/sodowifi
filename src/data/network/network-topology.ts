@@ -527,6 +527,75 @@ export const NETWORK_TOPOLOGY: NetworkTopology = {
         },
       ];
     }),
+
+    // Dãy C · P.25 – P.44 (Building A trong 3D - Dãy phòng học phía Tây Nam)
+    // Tầng trệt: P.25 - P.34
+    ...['25', '26', '27', '28', '29', '30', '31', '32', '33', '34'].flatMap((no) => [
+      {
+        id: `pc-p${no}`,
+        code: `PC-P${no}`,
+        label: `Máy tính P.${no}`,
+        type: 'pc' as const,
+        location: {
+          buildingId: 'building-a',
+          floorId: 'building-a-floor-1',
+          roomId: `room-p${no}`,
+          localPosition: [-0.8, 0.4, 0] as [number, number, number],
+        },
+        connectedDeviceIds: [],
+        metadata: { notes: `Máy tính giáo viên phòng học P.${no} (Dãy C)` },
+        provenance: { sourceReferences: [{ image: PROV_SOURCE, note: `Máy tính tại P.${no} Dãy C` }], confidence: 'high' as const, estimated: false },
+      },
+      {
+        id: `cam-p${no}`,
+        code: `CAM-P${no}`,
+        label: `Camera P.${no}`,
+        type: 'camera' as const,
+        location: {
+          buildingId: 'building-a',
+          floorId: 'building-a-floor-1',
+          roomId: `room-p${no}`,
+          localPosition: [1.2, 2.6, 1.2] as [number, number, number],
+        },
+        connectedDeviceIds: [],
+        metadata: { notes: `Camera an ninh góc cửa P.${no} (Dãy C)` },
+        provenance: { sourceReferences: [{ image: PROV_SOURCE, note: `Camera an ninh P.${no} Dãy C` }], confidence: 'high' as const, estimated: false },
+      },
+    ]),
+
+    // Lầu 1: P.35 - P.44
+    ...['35', '36', '37', '38', '39', '40', '41', '42', '43', '44'].flatMap((no) => [
+      {
+        id: `pc-p${no}`,
+        code: `PC-P${no}`,
+        label: `Máy tính P.${no}`,
+        type: 'pc' as const,
+        location: {
+          buildingId: 'building-a',
+          floorId: 'building-a-floor-2',
+          roomId: `room-p${no}`,
+          localPosition: [-0.8, 0.4, 0] as [number, number, number],
+        },
+        connectedDeviceIds: [],
+        metadata: { notes: `Máy tính giáo viên phòng học P.${no} (Dãy C)` },
+        provenance: { sourceReferences: [{ image: PROV_SOURCE, note: `Máy tính tại P.${no} Dãy C` }], confidence: 'high' as const, estimated: false },
+      },
+      {
+        id: `cam-p${no}`,
+        code: `CAM-P${no}`,
+        label: `Camera P.${no}`,
+        type: 'camera' as const,
+        location: {
+          buildingId: 'building-a',
+          floorId: 'building-a-floor-2',
+          roomId: `room-p${no}`,
+          localPosition: [1.2, 2.6, 1.2] as [number, number, number],
+        },
+        connectedDeviceIds: [],
+        metadata: { notes: `Camera an ninh góc cửa P.${no} (Dãy C)` },
+        provenance: { sourceReferences: [{ image: PROV_SOURCE, note: `Camera an ninh P.${no} Dãy C` }], confidence: 'high' as const, estimated: false },
+      },
+    ]),
   ],
 
   // ═══════════════════════════════════════════════════════════════════════
