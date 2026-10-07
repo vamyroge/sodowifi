@@ -244,7 +244,8 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
       // ─────────────────────────────────────────────────────────────────────────
       // EXTERIOR WALL ASSEMBLY WITH ARCHITECTURAL DEPTH & WINDOWS
       // ─────────────────────────────────────────────────────────────────────────
-      const winCount = isStair ? 1 : Math.max(1, Math.floor(len / WINDOW_PITCH));
+      // Dãy CD: mỗi phòng có 2 cửa sổ ở mặt sau; buồng thang có 1 cửa sổ. Các dãy khác: len / WINDOW_PITCH.
+      const winCount = isStair ? 1 : b.id === 'building-cd' ? 2 : Math.max(1, Math.floor(len / WINDOW_PITCH));
       const winW = Math.min(WINDOW_W, (len / winCount) * 0.72);
       const winCenters: number[] = [];
       for (let i = 0; i < winCount; i++) {
@@ -344,10 +345,10 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
       const dw0 = dc - DOOR_W / 2;
       const dw1 = dc + DOOR_W / 2;
 
-      const hasWin = len > 5;
-      const ws = l0 + 2.5;
+      const hasWin = b.id === 'building-cd' ? len > 3.2 : len > 5;
+      const ws = l0 + Math.min(2.2, len * 0.35);
       const wc = (ws + l1) / 2;
-      const ww = Math.min(WINDOW_W * 1.25, (l1 - ws) * 0.65);
+      const ww = Math.min(WINDOW_W * 1.15, (l1 - ws) * 0.65);
       const cw0 = wc - ww / 2;
       const cw1 = wc + ww / 2;
 
