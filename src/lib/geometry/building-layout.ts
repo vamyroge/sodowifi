@@ -39,14 +39,22 @@ export interface FloorLayout {
   rooms: RoomLayout[];
   slab: Box;
   corridorTile: Box;
+  corridorBorders?: Box[]; // Decorative border strips along corridor edges
   exteriorWalls: Box[];
+  exteriorDados?: Box[]; // Lower dado wall finish (warm/darker lower wall band)
   corridorWalls: Box[];
+  corridorDados?: Box[]; // Lower corridor dado band (teal/greenish protective trim)
+  moldings?: Box[]; // Cornice and architectural string courses
   partitions: Box[];
   windows: Box[]; // glass panes
   windowFrames: Box[]; // window outer frames, transoms, mullions
   windowSills: Box[]; // protruding window sills
+  windowGrilles?: Box[]; // Security burglar bars / metal grilles
   doors: Box[]; // door leaf panels
+  doorPanels?: Box[]; // 3D recessed/raised door panel moldings
   doorFrames: Box[]; // door jambs & head
+  doorHandles?: Box[]; // Metallic door levers/handles
+  ceilingLamps?: Box[]; // Ceiling mounted warm corridor lights
   railings: Box[]; // top & bottom rails
   railingPosts: Box[]; // balusters & posts
   columns: Box[]; // structural columns
@@ -156,11 +164,19 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
   const exteriorWalls: Box[] = [];
   const corridorWalls: Box[] = [];
   const partitions: Box[] = [];
+  const exteriorDados: Box[] = [];
+  const corridorDados: Box[] = [];
+  const moldings: Box[] = [];
   const windows: Box[] = [];
   const windowFrames: Box[] = [];
   const windowSills: Box[] = [];
+  const windowGrilles: Box[] = [];
   const doors: Box[] = [];
+  const doorPanels: Box[] = [];
   const doorFrames: Box[] = [];
+  const doorHandles: Box[] = [];
+  const corridorBorders: Box[] = [];
+  const ceilingLamps: Box[] = [];
   const railings: Box[] = [];
   const railingPosts: Box[] = [];
   const columns: Box[] = [];
@@ -182,6 +198,10 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
   const cFrameD1 = innerD + 0.04;
   const cGlassD0 = innerD - 0.008;
   const cGlassD1 = innerD + 0.008;
+
+  // Chiều cao mảng sơn chân tường (dado wall) đặc trưng trường học
+  const DADO_H = 1.1;
+  const dadoY1 = wallY0 + DADO_H;
 
   for (const room of floor.rooms) {
     const [la, lb] = f.spanToL(room.span);
@@ -240,13 +260,20 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
         const sill = isStair ? WINDOW_SILL + 0.8 : WINDOW_SILL;
         const winH = isStair ? WINDOW_H * 0.85 : WINDOW_H;
 
-        // Pier wall to the left of window
+        // Pier wall to the left of window (chia thành mảng tường trên và dado chân tường)
         if (w0 > currentL + 0.02) {
-          exteriorWalls.push(f.toBox(currentL, w0, outerWall[0], outerWall[1], wallY0, wallY1));
+          exteriorWalls.push(f.toBox(currentL, w0, outerWall[0], outerWall[1], dadoY1, wallY1));
+          exteriorDados.push(f.toBox(currentL, w0, outerWall[0], outerWall[1], wallY0, dadoY1));
         }
 
-        // Spandrel wall under window
-        exteriorWalls.push(f.toBox(w0, w1, outerWall[0], outerWall[1], wallY0, wallY0 + sill));
+        // Spandrel wall under window (nếu bậu cửa > dadoH thì chia tầng, nếu thấp hơn thì dado đến bậu)
+        const spandrelTop = wallY0 + sill;
+        if (spandrelTop > dadoY1) {
+          exteriorDados.push(f.toBox(w0, w1, outerWall[0], outerWall[1], wallY0, dadoY1));
+          exteriorWalls.push(f.toBox(w0, w1, outerWall[0], outerWall[1], dadoY1, spandrelTop));
+        } else {
+          exteriorDados.push(f.toBox(w0, w1, outerWall[0], outerWall[1], wallY0, spandrelTop));
+        }
 
         // Lintel wall above window
         exteriorWalls.push(f.toBox(w0, w1, outerWall[0], outerWall[1], wallY0 + sill + winH, wallY1));
@@ -274,6 +301,16 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
           f.toBox(c - FT / 2, c + FT / 2, frameD0, frameD1, wallY0 + sill, wallY0 + sill + winH - 0.4),
         );
 
+        // Security Burglar Bars / Hoa sắt bảo vệ bên trong cửa sổ
+        const grilleD = (glassD0 + glassD1) / 2;
+        const numGrilleBars = 3;
+        for (let gb = 1; gb <= numGrilleBars; gb++) {
+          const gbx = w0 + (winW / (numGrilleBars + 1)) * gb;
+          windowGrilles.push(
+            f.toBox(gbx - 0.008, gbx + 0.008, grilleD - 0.008, grilleD + 0.008, wallY0 + sill + FT, wallY0 + sill + winH - 0.4),
+          );
+        }
+
         // Recessed Window Glass Panes (lower leaves & upper fanlight)
         windows.push(
           f.toBox(w0 + FT, w1 - FT, glassD0, glassD1, wallY0 + sill + FT, wallY0 + sill + winH - FT),
@@ -284,8 +321,14 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
 
       // Pier wall to the right of the last window
       if (l1 > currentL + 0.02) {
-        exteriorWalls.push(f.toBox(currentL, l1, outerWall[0], outerWall[1], wallY0, wallY1));
+        exteriorWalls.push(f.toBox(currentL, l1, outerWall[0], outerWall[1], dadoY1, wallY1));
+        exteriorDados.push(f.toBox(currentL, l1, outerWall[0], outerWall[1], wallY0, dadoY1));
       }
+
+      // Phào chỉ ngắt tầng / gờ nẹp nổi dọc theo mép dưới cửa sổ
+      moldings.push(
+        f.toBox(l0, l1, outerFace - 0.02, outerFace + 0.02, wallY0 + WINDOW_SILL - 0.08, wallY0 + WINDOW_SILL - 0.04),
+      );
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -313,7 +356,8 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
 
       if (hasDoor) {
         if (dw0 > curC + 0.02) {
-          corridorWalls.push(f.toBox(curC, dw0, cWallD0, cWallD1, wallY0, wallY1));
+          corridorWalls.push(f.toBox(curC, dw0, cWallD0, cWallD1, dadoY1, wallY1));
+          corridorDados.push(f.toBox(curC, dw0, cWallD0, cWallD1, wallY0, dadoY1));
         }
         // Lintel above door
         corridorWalls.push(f.toBox(dw0, dw1, cWallD0, cWallD1, wallY0 + DOOR_H, wallY1));
@@ -327,8 +371,29 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
         );
 
         // Door Leaf
+        const leafW0 = dw0 + DFT + 0.005;
+        const leafW1 = dw1 - DFT - 0.005;
         doors.push(
-          f.toBox(dw0 + DFT + 0.01, dw1 - DFT - 0.01, innerD - 0.02, innerD + 0.02, wallY0, wallY0 + DOOR_H - DFT),
+          f.toBox(leafW0, leafW1, innerD - 0.02, innerD + 0.02, wallY0, wallY0 + DOOR_H - DFT),
+        );
+
+        // 3D Door Panels (Pano gỗ dập nổi)
+        const pInset = 0.06;
+        doorPanels.push(
+          // Pano dưới
+          f.toBox(leafW0 + pInset, leafW1 - pInset, innerD - 0.026, innerD + 0.026, wallY0 + 0.12, wallY0 + 0.88),
+          // Pano trên
+          f.toBox(leafW0 + pInset, leafW1 - pInset, innerD - 0.026, innerD + 0.026, wallY0 + 1.05, wallY0 + DOOR_H - DFT - 0.12),
+        );
+
+        // Tay nắm cửa inox (tay gạt kim loại)
+        const handleX = dw1 - DFT - 0.12;
+        const handleY = wallY0 + 0.98;
+        const handleSide0 = corridorAtMax ? innerD + 0.02 : innerD - 0.06;
+        const handleSide1 = corridorAtMax ? innerD + 0.06 : innerD - 0.02;
+        doorHandles.push(
+          f.toBox(handleX - 0.06, handleX + 0.02, handleSide0, handleSide1, handleY - 0.015, handleY + 0.015),
+          f.toBox(handleX - 0.02, handleX + 0.02, innerD - 0.04, innerD + 0.04, handleY - 0.06, handleY + 0.06),
         );
 
         curC = dw1;
@@ -336,13 +401,21 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
 
       if (hasWin && cw0 > curC) {
         if (cw0 > curC + 0.02) {
-          corridorWalls.push(f.toBox(curC, cw0, cWallD0, cWallD1, wallY0, wallY1));
+          corridorWalls.push(f.toBox(curC, cw0, cWallD0, cWallD1, dadoY1, wallY1));
+          corridorDados.push(f.toBox(curC, cw0, cWallD0, cWallD1, wallY0, dadoY1));
         }
         const cSill = WINDOW_SILL + 0.2;
         const cWinH = WINDOW_H - 0.2;
 
         // Spandrel below corridor window
-        corridorWalls.push(f.toBox(cw0, cw1, cWallD0, cWallD1, wallY0, wallY0 + cSill));
+        const cSpandrelTop = wallY0 + cSill;
+        if (cSpandrelTop > dadoY1) {
+          corridorDados.push(f.toBox(cw0, cw1, cWallD0, cWallD1, wallY0, dadoY1));
+          corridorWalls.push(f.toBox(cw0, cw1, cWallD0, cWallD1, dadoY1, cSpandrelTop));
+        } else {
+          corridorDados.push(f.toBox(cw0, cw1, cWallD0, cWallD1, wallY0, cSpandrelTop));
+        }
+
         // Lintel above corridor window
         corridorWalls.push(f.toBox(cw0, cw1, cWallD0, cWallD1, wallY0 + cSill + cWinH, wallY1));
 
@@ -365,7 +438,8 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
       }
 
       if (l1 > curC + 0.02) {
-        corridorWalls.push(f.toBox(curC, l1, cWallD0, cWallD1, wallY0, wallY1));
+        corridorWalls.push(f.toBox(curC, l1, cWallD0, cWallD1, dadoY1, wallY1));
+        corridorDados.push(f.toBox(curC, l1, cWallD0, cWallD1, wallY0, dadoY1));
       }
     } else {
       // ───────────────────────────────────────────────────────────────────────
@@ -649,6 +723,26 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
   const corrD0 = corridorAtMax ? roomD1 : D0;
   const corrD1 = corridorAtMax ? D1 : roomD0;
 
+  // ───────────────────────────────────────────────────────────────────────────
+  // CORRIDOR BORDER TILES & CEILING LAMPS (Chi tiết gạch viền & đèn trần hành lang)
+  // ─────────────────────────────────────────────────────────────────────────
+  const borderW = 0.12;
+  // Dải gạch viền 2 bên mép hành lang
+  corridorBorders.push(
+    f.toBox(L0 + 0.04, L1 - 0.04, corrD0 + 0.02, corrD0 + 0.02 + borderW, SLAB_T, SLAB_T + 0.022),
+    f.toBox(L0 + 0.04, L1 - 0.04, corrD1 - 0.02 - borderW, corrD1 - 0.02, SLAB_T, SLAB_T + 0.022),
+  );
+
+  // Đèn ốp trần hành lang (khoảng cách ~5m/đèn dọc theo trục hành lang)
+  const corrMidD = (corrD0 + corrD1) / 2;
+  const numLamps = Math.max(1, Math.floor(Math.abs(L1 - L0) / 4.8));
+  for (let li = 0; li < numLamps; li++) {
+    const lampL = Math.min(L0, L1) + (Math.abs(L1 - L0) / numLamps) * (li + 0.5);
+    ceilingLamps.push(
+      f.toBox(lampL - 0.35, lampL + 0.35, corrMidD - 0.15, corrMidD + 0.15, wallY1 - 0.08, wallY1 - 0.02),
+    );
+  }
+
   return {
     floor,
     level: floor.level,
@@ -657,14 +751,22 @@ function layoutFloor(b: Building, floor: Floor, f: Frame): FloorLayout {
     rooms,
     slab: f.toBox(L0, L1, D0, D1, 0, SLAB_T),
     corridorTile: f.toBox(L0 + 0.04, L1 - 0.04, corrD0 + 0.04, corrD1 - 0.04, SLAB_T, SLAB_T + 0.02),
+    corridorBorders: corridorBorders.length > 0 ? corridorBorders : undefined,
     exteriorWalls,
+    exteriorDados: exteriorDados.length > 0 ? exteriorDados : undefined,
     corridorWalls,
+    corridorDados: corridorDados.length > 0 ? corridorDados : undefined,
+    moldings: moldings.length > 0 ? moldings : undefined,
     partitions,
     windows,
     windowFrames,
     windowSills,
+    windowGrilles: windowGrilles.length > 0 ? windowGrilles : undefined,
     doors,
+    doorPanels: doorPanels.length > 0 ? doorPanels : undefined,
     doorFrames,
+    doorHandles: doorHandles.length > 0 ? doorHandles : undefined,
+    ceilingLamps: ceilingLamps.length > 0 ? ceilingLamps : undefined,
     railings,
     railingPosts,
     columns,

@@ -10,29 +10,46 @@ const std = (color: string, extra: Partial<THREE.MeshStandardMaterialParameters>
 
 export const MATERIALS = {
   // Vibrant Vietnamese school architectural palette: warm yellow walls, terracotta/orange roof tiles, wooden doors
-  exterior: std('#eed99f', { roughness: 0.75 }), // Warm school yellow (vàng chanh/vàng nghệ đặc trưng)
+  exterior: std('#eed99f', { roughness: 0.72 }), // Warm school yellow (vàng chanh/vàng nghệ đặc trưng)
+  exteriorDado: std('#ca8a04', { roughness: 0.8 }), // Mảng tường sơn chân tường vàng sậm/nâu đất chống bẩn
   corridorWall: std('#faebc4', { roughness: 0.8 }), // Light cream corridor
+  corridorDado: std('#0d9488', { roughness: 0.75 }), // Chân tường hành lang màu xanh lam/ngọc chống bẩn đặc trưng
+  molding: std('#fef3c7', { roughness: 0.65 }), // Phào chỉ gờ tường / dầm ngắt tầng nổi
   partition: std('#fdfbf7', { roughness: 0.85 }), // Off-white interior partitions
   slab: std('#cbd5e1', { roughness: 0.7 }), // Concrete slab
   tile: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85 }),
-  corridorTile: std('#d87d4a', { roughness: 0.8 }), // Terracotta tiled corridors (gạch tàu đỏ cam)
+  corridorTile: std('#ea580c', { roughness: 0.75 }), // Terracotta tiled corridors (gạch tàu đỏ cam ấm)
+  corridorBorder: std('#7c2d12', { roughness: 0.7 }), // Gạch viền chỉ mép hành lang đỏ sẫm
+  ceilingLamp: new THREE.MeshStandardMaterial({
+    color: '#fef08a',
+    emissive: '#fde047',
+    emissiveIntensity: 0.8,
+    roughness: 0.2,
+  }), // Hộp đèn trần hành lang phát sáng
   column: std('#dfbe78', { roughness: 0.7 }), // Sturdy warm columns
-  railing: std('#1e3a5f', { metalness: 0.6, roughness: 0.35 }), // Navy blue school railings
-  railingPost: std('#1e3a5f', { metalness: 0.6, roughness: 0.35 }), // Railing posts
-  baluster: std('#475569', { metalness: 0.5, roughness: 0.4 }), // Vertical grille balusters
+  railing: std('#1e3a5f', { metalness: 0.65, roughness: 0.35 }), // Navy blue school railings
+  railingPost: std('#1e3a5f', { metalness: 0.65, roughness: 0.35 }), // Railing posts
+  baluster: std('#334155', { metalness: 0.55, roughness: 0.4 }), // Vertical grille balusters
   glass: new THREE.MeshStandardMaterial({
-    color: '#38bdf8',
-    roughness: 0.1,
-    metalness: 0.5,
+    color: '#7dd3fc',
+    roughness: 0.08,
+    metalness: 0.15,
     transparent: true,
-    opacity: 0.75,
+    opacity: 0.7,
   }),
-  windowFrame: std('#334155', { roughness: 0.5, metalness: 0.35 }), // Dark aluminum frame
+  windowFrame: std('#1e293b', { roughness: 0.45, metalness: 0.4 }), // Dark aluminum frame
+  windowGrille: std('#0284c7', { roughness: 0.4, metalness: 0.5 }), // Hoa sắt bảo vệ cửa sổ màu xanh dương
   windowSill: std('#e2e8f0', { roughness: 0.65 }), // Precast concrete sill
-  door: std('#854d0e', { roughness: 0.65 }), // Warm natural wood doors
-  doorFrame: std('#5c330a', { roughness: 0.6 }), // Solid wood door frame
+  door: std('#78350f', { roughness: 0.6 }), // Warm natural wood doors
+  doorPanel: std('#5c2807', { roughness: 0.55 }), // Pano gỗ tạo gờ âm nổi cánh cửa
+  doorFrame: std('#451a03', { roughness: 0.6 }), // Solid wood door frame
+  doorHandle: new THREE.MeshStandardMaterial({
+    color: '#e2e8f0',
+    metalness: 0.85,
+    roughness: 0.2,
+  }), // Tay nắm cửa kim loại inox sáng bóng
   beam: std('#dfbe78', { roughness: 0.7 }), // Concrete structural beam
-  plinth: std('#64748b', { roughness: 0.85 }), // Ground foundation stone trim
+  plinth: std('#475569', { roughness: 0.85 }), // Ground foundation stone trim
   coping: std('#e2e8f0', { roughness: 0.6 }), // Parapet cap stone
   penthouse: std('#eed99f', { roughness: 0.75 }), // Roof stair tum structure
   stairs: std('#94a3b8'), // Durable grey stair steps
@@ -76,7 +93,10 @@ export const MATERIALS = {
 /** Wall-type materials whose transparency depends on view mode. */
 const WALLS = [
   MATERIALS.exterior,
+  MATERIALS.exteriorDado,
   MATERIALS.corridorWall,
+  MATERIALS.corridorDado,
+  MATERIALS.molding,
   MATERIALS.partition,
   MATERIALS.column,
   MATERIALS.beam,

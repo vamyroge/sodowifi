@@ -40,13 +40,21 @@ export function FloorMesh({ buildingId, floorLayout, maxLevel }: FloorMeshProps)
     corridorTileGeom,
     tileGeom,
     extWallGeom,
+    extDadoGeom,
     corrWallGeom,
+    corrDadoGeom,
+    moldingGeom,
     partGeom,
     windowGeom,
     windowFrameGeom,
     windowSillGeom,
+    windowGrilleGeom,
     doorGeom,
+    doorPanelGeom,
     doorFrameGeom,
+    doorHandleGeom,
+    corridorBorderGeom,
+    ceilingLampGeom,
     railGeom,
     railPostGeom,
     columnGeom,
@@ -80,15 +88,23 @@ export function FloorMesh({ buildingId, floorLayout, maxLevel }: FloorMeshProps)
     return {
       slabGeom: mergeBoxes([floorLayout.slab]),
       corridorTileGeom: mergeBoxes([floorLayout.corridorTile]),
+      corridorBorderGeom: floorLayout.corridorBorders ? mergeBoxes(floorLayout.corridorBorders) : null,
       tileGeom: mergeColoredBoxes(coloredTiles, colorFn),
       extWallGeom: mergeBoxes(floorLayout.exteriorWalls),
+      extDadoGeom: floorLayout.exteriorDados ? mergeBoxes(floorLayout.exteriorDados) : null,
       corrWallGeom: mergeBoxes(floorLayout.corridorWalls),
+      corrDadoGeom: floorLayout.corridorDados ? mergeBoxes(floorLayout.corridorDados) : null,
+      moldingGeom: floorLayout.moldings ? mergeBoxes(floorLayout.moldings) : null,
       partGeom: mergeBoxes(floorLayout.partitions),
       windowGeom: mergeBoxes(floorLayout.windows),
       windowFrameGeom: mergeBoxes(floorLayout.windowFrames),
       windowSillGeom: mergeBoxes(floorLayout.windowSills),
+      windowGrilleGeom: floorLayout.windowGrilles ? mergeBoxes(floorLayout.windowGrilles) : null,
       doorGeom: mergeBoxes(floorLayout.doors),
+      doorPanelGeom: floorLayout.doorPanels ? mergeBoxes(floorLayout.doorPanels) : null,
       doorFrameGeom: mergeBoxes(floorLayout.doorFrames),
+      doorHandleGeom: floorLayout.doorHandles ? mergeBoxes(floorLayout.doorHandles) : null,
+      ceilingLampGeom: floorLayout.ceilingLamps ? mergeBoxes(floorLayout.ceilingLamps) : null,
       railGeom: mergeBoxes(floorLayout.railings),
       railPostGeom: mergeBoxes(floorLayout.railingPosts),
       columnGeom: mergeBoxes(floorLayout.columns),
@@ -97,21 +113,23 @@ export function FloorMesh({ buildingId, floorLayout, maxLevel }: FloorMeshProps)
       stairRailingGeom: mergeBoxes(floorLayout.stairRailings),
       plinthGeom: floorLayout.plinth ? mergeBoxes(floorLayout.plinth) : null,
       entranceStepGeom: floorLayout.entranceSteps ? mergeBoxes(floorLayout.entranceSteps) : null,
-      ghostGeom: mergeBoxes([floorLayout.slab, ...floorLayout.exteriorWalls]),
-      ghostLineGeom: mergeBoxEdges([floorLayout.slab, ...floorLayout.exteriorWalls]),
-      roomLinesGeom: mergeBoxEdges(floorLayout.rooms.map((r) => r.volume)),
-      slabEdgeGeom: mergeBoxEdges([floorLayout.slab, floorLayout.corridorTile]),
-      wallEdgeGeom: mergeBoxEdges([
-        ...floorLayout.exteriorWalls,
-        ...floorLayout.corridorWalls,
-        ...floorLayout.partitions,
-      ]),
-      stairEdgeGeom: mergeBoxEdges([...floorLayout.stairs, ...floorLayout.stairRailings]),
-      columnEdgeGeom: mergeBoxEdges(floorLayout.columns),
-      beamEdgeGeom: mergeBoxEdges(floorLayout.beams),
-      winFrameEdgeGeom: mergeBoxEdges(floorLayout.windowFrames),
+      ghostGeom: vis === 'ghost' ? mergeBoxes([floorLayout.slab, ...floorLayout.exteriorWalls]) : null,
+      ghostLineGeom: vis === 'ghost' ? mergeBoxEdges([floorLayout.slab, ...floorLayout.exteriorWalls]) : null,
+      roomLinesGeom: flags.showRoomLines || isHolo ? mergeBoxEdges(floorLayout.rooms.map((r) => r.volume)) : null,
+      slabEdgeGeom: isHolo ? mergeBoxEdges([floorLayout.slab, floorLayout.corridorTile]) : null,
+      wallEdgeGeom: isHolo
+        ? mergeBoxEdges([
+            ...floorLayout.exteriorWalls,
+            ...floorLayout.corridorWalls,
+            ...floorLayout.partitions,
+          ])
+        : null,
+      stairEdgeGeom: isHolo ? mergeBoxEdges([...floorLayout.stairs, ...floorLayout.stairRailings]) : null,
+      columnEdgeGeom: isHolo ? mergeBoxEdges(floorLayout.columns) : null,
+      beamEdgeGeom: isHolo ? mergeBoxEdges(floorLayout.beams) : null,
+      winFrameEdgeGeom: isHolo ? mergeBoxEdges(floorLayout.windowFrames) : null,
     };
-  }, [floorLayout, flags.schematicColors]);
+  }, [floorLayout, flags.schematicColors, flags.showRoomLines, isHolo, vis]);
 
   if (vis === 'hidden') return null;
 
@@ -214,6 +232,7 @@ export function FloorMesh({ buildingId, floorLayout, maxLevel }: FloorMeshProps)
       {/* Structural Slabs & Tiles */}
       {slabGeom && <mesh geometry={slabGeom} material={MATERIALS.slab} receiveShadow />}
       {corridorTileGeom && <mesh geometry={corridorTileGeom} material={MATERIALS.corridorTile} receiveShadow />}
+      {corridorBorderGeom && <mesh geometry={corridorBorderGeom} material={MATERIALS.corridorBorder} receiveShadow />}
       {tileGeom && <mesh geometry={tileGeom} material={MATERIALS.tile} receiveShadow />}
 
       {/* Ground Floor Plinth & Entrance Steps */}
@@ -222,10 +241,14 @@ export function FloorMesh({ buildingId, floorLayout, maxLevel }: FloorMeshProps)
 
       {/* Walls, Columns & Ceiling Beams */}
       {extWallGeom && <mesh geometry={extWallGeom} material={MATERIALS.exterior} castShadow receiveShadow />}
+      {extDadoGeom && <mesh geometry={extDadoGeom} material={MATERIALS.exteriorDado} castShadow receiveShadow />}
       {corrWallGeom && <mesh geometry={corrWallGeom} material={MATERIALS.corridorWall} castShadow receiveShadow />}
+      {corrDadoGeom && <mesh geometry={corrDadoGeom} material={MATERIALS.corridorDado} castShadow receiveShadow />}
+      {moldingGeom && <mesh geometry={moldingGeom} material={MATERIALS.molding} castShadow receiveShadow />}
       {partGeom && <mesh geometry={partGeom} material={MATERIALS.partition} castShadow receiveShadow />}
       {columnGeom && <mesh geometry={columnGeom} material={MATERIALS.column} castShadow />}
       {beamGeom && <mesh geometry={beamGeom} material={MATERIALS.beam} castShadow />}
+      {ceilingLampGeom && <mesh geometry={ceilingLampGeom} material={MATERIALS.ceilingLamp} />}
 
       {/* Windows, Doors, Stairs & Railings */}
       {flags.showOpenings && (
@@ -233,11 +256,14 @@ export function FloorMesh({ buildingId, floorLayout, maxLevel }: FloorMeshProps)
           {/* Architectural Window Assembly with Depth */}
           {windowSillGeom && <mesh geometry={windowSillGeom} material={MATERIALS.windowSill} castShadow receiveShadow />}
           {windowFrameGeom && <mesh geometry={windowFrameGeom} material={MATERIALS.windowFrame} castShadow />}
+          {windowGrilleGeom && <mesh geometry={windowGrilleGeom} material={MATERIALS.windowGrille} castShadow />}
           {windowGeom && <mesh geometry={windowGeom} material={MATERIALS.glass} />}
 
           {/* Architectural Door Assembly */}
           {doorFrameGeom && <mesh geometry={doorFrameGeom} material={MATERIALS.doorFrame} castShadow />}
           {doorGeom && <mesh geometry={doorGeom} material={MATERIALS.door} />}
+          {doorPanelGeom && <mesh geometry={doorPanelGeom} material={MATERIALS.doorPanel} castShadow />}
+          {doorHandleGeom && <mesh geometry={doorHandleGeom} material={MATERIALS.doorHandle} />}
 
           {/* Architectural Railing with Balusters */}
           {railGeom && <mesh geometry={railGeom} material={MATERIALS.railing} castShadow />}

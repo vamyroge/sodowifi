@@ -76,19 +76,25 @@ export function SceneLighting() {
 
   return (
     <>
-      <ambientLight intensity={isEvening ? 0.6 : 0.9} color={isEvening ? '#ffd8b3' : '#ffffff'} />
+      <ambientLight intensity={isEvening ? 0.65 : 0.85} color={isEvening ? '#ffd8b3' : '#fdfbf7'} />
       <directionalLight
-        position={isEvening ? [-60, 30, -50] : [50, 80, 60]}
-        intensity={isEvening ? 1.2 : 1.6}
-        color={isEvening ? '#ff9955' : '#fffcf7'}
+        position={isEvening ? [-65, 32, -45] : [55, 75, 50]}
+        intensity={isEvening ? 1.4 : 1.75}
+        color={isEvening ? '#ffa059' : '#fffbf2'}
         castShadow={viewMode === 'architectural'}
         shadow-mapSize={[2048, 2048]}
-        shadow-bias={-0.0001}
+        shadow-bias={-0.00008}
       >
-        <orthographicCamera attach="shadow-camera" args={[-90, 90, 80, -80, 10, 200]} />
+        <orthographicCamera attach="shadow-camera" args={[-95, 95, 85, -85, 10, 220]} />
       </directionalLight>
+      {/* Fill light nhẹ từ phía đối diện làm sáng chi tiết hốc tường hành lang */}
+      <directionalLight
+        position={isEvening ? [50, 40, 50] : [-50, 45, -45]}
+        intensity={0.35}
+        color="#bae6fd"
+      />
       <hemisphereLight
-        args={[isEvening ? '#ffcaa0' : '#dbe8f5', isEvening ? '#4a3224' : '#e5ded5', 0.4]}
+        args={[isEvening ? '#fed7aa' : '#e0f2fe', isEvening ? '#451a03' : '#f5ebe0', 0.55]}
       />
     </>
   );

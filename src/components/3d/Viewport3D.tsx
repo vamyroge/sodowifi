@@ -22,8 +22,13 @@ export function Viewport3D() {
         }}
         shadows={viewMode === 'architectural'}
         camera={{ position: [0, 85, 125], fov: 42, near: 0.5, far: 500 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
+        dpr={[1, 1.25]}
+        gl={{
+          antialias: true,
+          alpha: false,
+          powerPreference: 'high-performance',
+          stencil: false,
+        }}
       >
         <color
           attach="background"

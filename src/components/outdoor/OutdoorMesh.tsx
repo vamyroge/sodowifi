@@ -84,6 +84,60 @@ export function OutdoorMesh() {
   const groundBounds = useMemo(() => rectToWorld(cal, school.campus.ground), [cal, school]);
   const courtyardBounds = useMemo(() => rectToWorld(cal, school.campus.courtyard), [cal, school]);
 
+  // Procedural Paver Tile Texture cho sân trường màu xám trắng có hoa văn gạch
+  const courtyardTexture = useMemo(() => {
+    if (typeof document === 'undefined') return null;
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      // 1. Nền xám trắng sáng thanh nhã (warm grey-white)
+      ctx.fillStyle = '#e8ecf1';
+      ctx.fillRect(0, 0, 512, 512);
+
+      // 2. Kẻ lưới hoa văn gạch lát sân trường (paver paving grid)
+      const tileSize = 64;
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 2;
+
+      for (let x = 0; x <= 512; x += tileSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, 512);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= 512; y += tileSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(512, y);
+        ctx.stroke();
+      }
+
+      // 3. Họa tiết hoa văn chéo nhẹ / đan gạch tạo điểm nhấn
+      ctx.strokeStyle = 'rgba(203, 213, 225, 0.45)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < 512; x += tileSize) {
+        for (let y = 0; y < 512; y += tileSize) {
+          // Hoa văn hình học chữ thập / góc vuông nhẹ ở tâm viên gạch
+          ctx.strokeRect(x + 12, y + 12, tileSize - 24, tileSize - 24);
+        }
+      }
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(18, 16);
+    return tex;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      courtyardTexture?.dispose();
+    };
+  }, [courtyardTexture]);
+
   return (
     <group>
       {/* Surrounding terrain */}
@@ -109,7 +163,16 @@ export function OutdoorMesh() {
         receiveShadow
       >
         <planeGeometry args={[courtyardBounds.w, courtyardBounds.d]} />
-        <primitive object={isHolo ? HOLO_MATERIALS.deepCourtyard : MATERIALS.courtyard} attach="material" />
+        {isHolo ? (
+          <primitive object={HOLO_MATERIALS.deepCourtyard} attach="material" />
+        ) : (
+          <meshStandardMaterial
+            color="#f1f5f9"
+            map={courtyardTexture ?? undefined}
+            roughness={0.88}
+            metalness={0.05}
+          />
+        )}
       </mesh>
 
       {/* Quốc Lộ 1A Road */}
