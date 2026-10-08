@@ -78,23 +78,34 @@ export const SCHOOL_BUILDINGS_PLAN: SchoolBuildingPlan[] = [
     ],
   },
 
-  // Dãy A (Building E trong 3D - Dãy phòng học phía Bắc, phải ảnh)
+  // Dãy A (Building E trong 3D - Dãy phòng học phía Bắc, gồm 2 cột: Trệt và Lầu 1)
   {
     id: 'building-e',
     code: 'A',
-    name: 'Dãy A · P.01 – P.12',
+    name: 'Dãy A · P.01 – P.12 (Trệt & Lầu 1)',
     drawnRect: { x0: 1052, y0: 232, x1: 1167, y1: 508 },
-    footprint: { x0: 1081, y0: 232, x1: 1138, y1: 508 },
+    footprint: { x0: 1052, y0: 232, x1: 1167, y1: 508 },
     color: '#7c3aed', // Purple
     rooms: [
-      { id: 'room-p07', label: 'P.07 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 232, x1: 1167, y1: 268 } },
-      { id: 'room-p08', label: 'P.08 (Lầu 1 - WAP)', level: 1, rect: { x0: 1110, y0: 268, x1: 1167, y1: 304 } },
-      { id: 'stair-a-1', label: 'Cầu thang A1', level: 1, rect: { x0: 1052, y0: 304, x1: 1167, y1: 340 } },
-      { id: 'room-p09', label: 'P.09 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 340, x1: 1167, y1: 376 } },
-      { id: 'room-p10', label: 'P.10 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 376, x1: 1167, y1: 412 } },
-      { id: 'stair-a-2', label: 'Cầu thang A2 (VNPT A)', level: 1, rect: { x0: 1052, y0: 412, x1: 1167, y1: 448 } },
-      { id: 'room-p11', label: 'P.11 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 448, x1: 1167, y1: 480 } },
-      { id: 'room-p12', label: 'P.12 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 480, x1: 1167, y1: 508 } },
+      // CỘT TRỆT (P.01 – P.06, x 1052 - 1110, bên trái)
+      { id: 'room-p06', label: 'P.06 (Trệt)', level: 0, rect: { x0: 1052, y0: 232, x1: 1110, y1: 264 } },
+      { id: 'room-p05', label: 'P.05 (Trệt)', level: 0, rect: { x0: 1052, y0: 264, x1: 1110, y1: 297 } },
+      { id: 'stair-a-1-g', label: 'CT 1 (Trệt)', level: 0, rect: { x0: 1052, y0: 297, x1: 1110, y1: 336 } },
+      { id: 'room-p04', label: 'P.04 (Trệt)', level: 0, rect: { x0: 1052, y0: 336, x1: 1110, y1: 368 } },
+      { id: 'room-p03', label: 'P.03 (Trệt)', level: 0, rect: { x0: 1052, y0: 368, x1: 1110, y1: 402 } },
+      { id: 'stair-a-2-g', label: 'CT 2 (Trệt)', level: 0, rect: { x0: 1052, y0: 402, x1: 1110, y1: 440 } },
+      { id: 'room-p02', label: 'P.02 (Trệt)', level: 0, rect: { x0: 1052, y0: 440, x1: 1110, y1: 474 } },
+      { id: 'room-p01', label: 'P.01 (Trệt)', level: 0, rect: { x0: 1052, y0: 474, x1: 1110, y1: 508 } },
+
+      // CỘT LẦU 1 (P.07 – P.12, x 1110 - 1167, bên phải)
+      { id: 'room-p07', label: 'P.07 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 232, x1: 1167, y1: 264 } },
+      { id: 'room-p08', label: 'P.08 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 264, x1: 1167, y1: 297 } },
+      { id: 'stair-a-1-l1', label: 'CT 1 (Lầu)', level: 1, rect: { x0: 1110, y0: 297, x1: 1167, y1: 336 } },
+      { id: 'room-p09', label: 'P.09 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 336, x1: 1167, y1: 368 } },
+      { id: 'room-p10', label: 'P.10 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 368, x1: 1167, y1: 402 } },
+      { id: 'stair-a-2-l1', label: 'CT 2 (VNPT A)', level: 1, rect: { x0: 1110, y0: 402, x1: 1167, y1: 440 } },
+      { id: 'room-p11', label: 'P.11 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 440, x1: 1167, y1: 474 } },
+      { id: 'room-p12', label: 'P.12 (Lầu 1)', level: 1, rect: { x0: 1110, y0: 474, x1: 1167, y1: 508 } },
     ],
   },
 
@@ -133,7 +144,7 @@ export const SCHOOL_OUTDOOR_PLAN: OutdoorFacilityPlan[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. TỌA ĐỘ VỊ TRÍ THIẾT BỊ MẠNG TRÊN MẶT BẰNG SODOTRUONG.JPG (Top-down)
+// 2. TỌA ĐỘ VỊ TRÍ THIẾT BỊ MẠNG TRÊN MẶT BẰNG (Top-down)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface TopDownNodePosition {
@@ -146,84 +157,88 @@ export interface TopDownNodePosition {
 
 export const TOPDOWN_DEVICE_COORDINATES: Record<string, TopDownNodePosition> = {
   // ── DÃY B ──
-  'gw-vnpt-b': { x: 485, y: 320, width: 95, height: 38, cluster: 'b-cd' }, // VNPT Dãy B tại buồng thang 1
-  'hub-1': { x: 505, y: 228, width: 85, height: 34, cluster: 'b-cd' },     // Hub 1 tại góc hành lang nối CD
-  'r-b-p19-p20': { x: 480, y: 260, width: 80, height: 32, cluster: 'b-cd' },
-  'r-b-p21-p22': { x: 480, y: 366, width: 80, height: 32, cluster: 'b-cd' },
-  'r-b-p23-p24': { x: 480, y: 495, width: 80, height: 32, cluster: 'b-cd' },
+  'gw-vnpt-b': { x: 485, y: 320, width: 26, height: 26, cluster: 'b-cd' }, // VNPT Dãy B tại buồng thang 1
+  'hub-1': { x: 505, y: 228, width: 20, height: 20, cluster: 'b-cd' },     // Hub 1 tại góc hành lang nối CD
+  'r-b-p19-p20': { x: 480, y: 260, width: 22, height: 22, cluster: 'b-cd' },
+  'r-b-p21-p22': { x: 480, y: 366, width: 22, height: 22, cluster: 'b-cd' },
+  'r-b-p23-p24': { x: 480, y: 495, width: 22, height: 22, cluster: 'b-cd' },
 
   // Endpoints P19..P24 trong phòng
-  'pc-p19': { x: 412, y: 238, width: 48, height: 24, cluster: 'b-cd' },
-  'cam-p19': { x: 436, y: 248, width: 44, height: 22, cluster: 'b-cd' },
-  'pc-p20': { x: 412, y: 280, width: 48, height: 24, cluster: 'b-cd' },
-  'cam-p20': { x: 436, y: 290, width: 44, height: 22, cluster: 'b-cd' },
+  'pc-p19': { x: 412, y: 238, width: 16, height: 16, cluster: 'b-cd' },
+  'cam-p19': { x: 436, y: 248, width: 16, height: 16, cluster: 'b-cd' },
+  'pc-p20': { x: 412, y: 280, width: 16, height: 16, cluster: 'b-cd' },
+  'cam-p20': { x: 436, y: 290, width: 16, height: 16, cluster: 'b-cd' },
 
-  'pc-p21': { x: 412, y: 366, width: 48, height: 24, cluster: 'b-cd' },
-  'cam-p21': { x: 436, y: 378, width: 44, height: 22, cluster: 'b-cd' },
-  'pc-p22': { x: 412, y: 418, width: 48, height: 24, cluster: 'b-cd' },
-  'cam-p22': { x: 436, y: 430, width: 44, height: 22, cluster: 'b-cd' },
+  'pc-p21': { x: 412, y: 366, width: 16, height: 16, cluster: 'b-cd' },
+  'cam-p21': { x: 436, y: 378, width: 16, height: 16, cluster: 'b-cd' },
+  'pc-p22': { x: 412, y: 418, width: 16, height: 16, cluster: 'b-cd' },
+  'cam-p22': { x: 436, y: 430, width: 16, height: 16, cluster: 'b-cd' },
 
-  'pc-p23': { x: 412, y: 495, width: 48, height: 24, cluster: 'b-cd' },
-  'cam-p23': { x: 436, y: 505, width: 44, height: 22, cluster: 'b-cd' },
-  'pc-p24': { x: 412, y: 528, width: 48, height: 24, cluster: 'b-cd' },
-  'cam-p24': { x: 436, y: 538, width: 44, height: 22, cluster: 'b-cd' },
+  'pc-p23': { x: 412, y: 495, width: 16, height: 16, cluster: 'b-cd' },
+  'cam-p23': { x: 436, y: 505, width: 16, height: 16, cluster: 'b-cd' },
+  'pc-p24': { x: 412, y: 528, width: 16, height: 16, cluster: 'b-cd' },
+  'cam-p24': { x: 436, y: 538, width: 16, height: 16, cluster: 'b-cd' },
 
   // ── DÃY C·D ──
   // PM1
-  'r-cd-pm1': { x: 700, y: 198, width: 84, height: 32, cluster: 'b-cd' },
-  'sw-pm1-1': { x: 672, y: 215, width: 48, height: 22, cluster: 'b-cd' },
-  'sw-pm1-2': { x: 700, y: 215, width: 48, height: 22, cluster: 'b-cd' },
-  'sw-pm1-3': { x: 728, y: 215, width: 48, height: 22, cluster: 'b-cd' },
-  'pc-pm1-cluster': { x: 700, y: 240, width: 100, height: 28, cluster: 'b-cd' },
+  'r-cd-pm1': { x: 700, y: 202, width: 22, height: 22, cluster: 'b-cd' },
+  'sw-pm1-1': { x: 672, y: 214, width: 18, height: 18, cluster: 'b-cd' },
+  'pc-pm1-c1': { x: 672, y: 228, width: 32, height: 18, cluster: 'b-cd' }, // Cụm 13 PC nối Switch 1
+  'sw-pm1-2': { x: 700, y: 214, width: 18, height: 18, cluster: 'b-cd' },
+  'pc-pm1-c2': { x: 700, y: 228, width: 32, height: 18, cluster: 'b-cd' }, // Cụm 12 PC nối Switch 2
+  'sw-pm1-3': { x: 728, y: 214, width: 18, height: 18, cluster: 'b-cd' },
+  'pc-pm1-c3': { x: 728, y: 228, width: 32, height: 18, cluster: 'b-cd' }, // Cụm 12 PC & GV nối Switch 3
 
   // PM2
-  'r-cd-pm2': { x: 580, y: 198, width: 84, height: 32, cluster: 'b-cd' },
-  'sw-pm2-1': { x: 552, y: 215, width: 48, height: 22, cluster: 'b-cd' },
-  'sw-pm2-2': { x: 580, y: 215, width: 48, height: 22, cluster: 'b-cd' },
-  'sw-pm2-3': { x: 608, y: 215, width: 48, height: 22, cluster: 'b-cd' },
-  'pc-pm2-cluster': { x: 580, y: 240, width: 95, height: 28, cluster: 'b-cd' },
+  'r-cd-pm2': { x: 580, y: 202, width: 22, height: 22, cluster: 'b-cd' },
+  'sw-pm2-1': { x: 552, y: 214, width: 18, height: 18, cluster: 'b-cd' },
+  'pc-pm2-c1': { x: 552, y: 228, width: 30, height: 18, cluster: 'b-cd' }, // Cụm 8 PC nối Switch 1
+  'sw-pm2-2': { x: 580, y: 214, width: 18, height: 18, cluster: 'b-cd' },
+  'pc-pm2-c2': { x: 580, y: 228, width: 30, height: 18, cluster: 'b-cd' }, // Cụm 8 PC nối Switch 2
+  'sw-pm2-3': { x: 608, y: 214, width: 18, height: 18, cluster: 'b-cd' },
+  'pc-pm2-c3': { x: 608, y: 228, width: 30, height: 18, cluster: 'b-cd' }, // Cụm 8 PC & GV nối Switch 3
 
   // Thư viện & TH Lý
-  'pc-thu-vien': { x: 960, y: 215, width: 75, height: 26, cluster: 'b-cd' },
-  'pc-th-ly': { x: 960, y: 252, width: 75, height: 26, cluster: 'b-cd' },
+  'pc-thu-vien': { x: 960, y: 215, width: 20, height: 20, cluster: 'b-cd' },
+  'pc-th-ly': { x: 960, y: 252, width: 20, height: 20, cluster: 'b-cd' },
 
-  // ── DÃY A (BUILDING E) ──
-  'gw-vnpt-a': { x: 1070, y: 430, width: 95, height: 38, cluster: 'a' }, // VNPT Dãy A tại buồng thang 2
-  'hub-3': { x: 1070, y: 405, width: 75, height: 30, cluster: 'a' },
-  'r-a-t2': { x: 1045, y: 405, width: 70, height: 28, cluster: 'a' },
-  'hub-2': { x: 1070, y: 318, width: 75, height: 30, cluster: 'a' },
-  'wap-a-t2': { x: 1045, y: 282, width: 72, height: 28, cluster: 'a' },
+  // ── DÃY A (BUILDING E: 2 CỘT TRỆT & LẦU 1) ──
+  // Gateway & Hub hạ tầng
+  'gw-vnpt-a': { x: 1100, y: 421, width: 26, height: 26, cluster: 'a' }, // Cổng quang VNPT A tại buồng thang 2
+  'hub-5': { x: 1081, y: 421, width: 20, height: 20, cluster: 'a' },     // Hub 5 buồng thang 2 tầng trệt
+  'hub-4': { x: 1081, y: 316, width: 20, height: 20, cluster: 'a' },     // Hub 4 buồng thang 1 tầng trệt
+  'hub-3': { x: 1138, y: 421, width: 20, height: 20, cluster: 'a' },     // Hub 3 buồng thang 2 tầng lầu
+  'r-a-t2': { x: 1120, y: 421, width: 22, height: 22, cluster: 'a' },    // Router A lầu 1
+  'hub-2': { x: 1138, y: 316, width: 20, height: 20, cluster: 'a' },     // Hub 2 buồng thang 1 tầng lầu
+  'wap-a-t2': { x: 1138, y: 265, width: 20, height: 20, cluster: 'a' },  // Wifi WAP gần P.08 tầng lầu
 
-  'hub-5': { x: 1092, y: 445, width: 75, height: 30, cluster: 'a' }, // Tầng trệt
-  'hub-4': { x: 1092, y: 338, width: 75, height: 30, cluster: 'a' }, // Cascade từ Hub 5
+  // CỘT TẦNG TRỆT: P.01 – P.06 (x ∈ [1052, 1110], tâm x = 1081)
+  'pc-p01': { x: 1070, y: 491, width: 16, height: 16, cluster: 'a' },
+  'cam-p01': { x: 1092, y: 491, width: 16, height: 16, cluster: 'a' },
+  'pc-p02': { x: 1070, y: 457, width: 16, height: 16, cluster: 'a' },
+  'cam-p02': { x: 1092, y: 457, width: 16, height: 16, cluster: 'a' },
+  'pc-p03': { x: 1070, y: 385, width: 16, height: 16, cluster: 'a' },
+  'cam-p03': { x: 1092, y: 385, width: 16, height: 16, cluster: 'a' },
+  'pc-p04': { x: 1070, y: 352, width: 16, height: 16, cluster: 'a' },
+  'cam-p04': { x: 1092, y: 352, width: 16, height: 16, cluster: 'a' },
+  'pc-p05': { x: 1070, y: 280, width: 16, height: 16, cluster: 'a' },
+  'cam-p05': { x: 1092, y: 280, width: 16, height: 16, cluster: 'a' },
+  'pc-p06': { x: 1070, y: 248, width: 16, height: 16, cluster: 'a' },
+  'cam-p06': { x: 1092, y: 248, width: 16, height: 16, cluster: 'a' },
 
-  // Endpoints P.01..P.06 (Trệt)
-  'pc-p01': { x: 1138, y: 495, width: 46, height: 22, cluster: 'a' },
-  'cam-p01': { x: 1155, y: 502, width: 42, height: 20, cluster: 'a' },
-  'pc-p02': { x: 1138, y: 465, width: 46, height: 22, cluster: 'a' },
-  'cam-p02': { x: 1155, y: 472, width: 42, height: 20, cluster: 'a' },
-  'pc-p03': { x: 1138, y: 395, width: 46, height: 22, cluster: 'a' },
-  'cam-p03': { x: 1155, y: 402, width: 42, height: 20, cluster: 'a' },
-  'pc-p04': { x: 1138, y: 360, width: 46, height: 22, cluster: 'a' },
-  'cam-p04': { x: 1155, y: 367, width: 42, height: 20, cluster: 'a' },
-  'pc-p05': { x: 1138, y: 285, width: 46, height: 22, cluster: 'a' },
-  'cam-p05': { x: 1155, y: 292, width: 42, height: 20, cluster: 'a' },
-  'pc-p06': { x: 1138, y: 250, width: 46, height: 22, cluster: 'a' },
-  'cam-p06': { x: 1155, y: 257, width: 42, height: 20, cluster: 'a' },
-
-  // Endpoints P.07..P.12 (Lầu 1)
-  'pc-p07': { x: 1120, y: 242, width: 46, height: 22, cluster: 'a' },
-  'cam-p07': { x: 1135, y: 248, width: 42, height: 20, cluster: 'a' },
-  'pc-p08': { x: 1120, y: 275, width: 46, height: 22, cluster: 'a' },
-  'cam-p08': { x: 1135, y: 282, width: 42, height: 20, cluster: 'a' },
-  'pc-p09': { x: 1120, y: 348, width: 46, height: 22, cluster: 'a' },
-  'cam-p09': { x: 1135, y: 355, width: 42, height: 20, cluster: 'a' },
-  'pc-p10': { x: 1120, y: 385, width: 46, height: 22, cluster: 'a' },
-  'cam-p10': { x: 1135, y: 392, width: 42, height: 20, cluster: 'a' },
-  'pc-p11': { x: 1120, y: 455, width: 46, height: 22, cluster: 'a' },
-  'cam-p11': { x: 1135, y: 462, width: 42, height: 20, cluster: 'a' },
-  'pc-p12': { x: 1120, y: 490, width: 46, height: 22, cluster: 'a' },
-  'cam-p12': { x: 1135, y: 498, width: 42, height: 20, cluster: 'a' },
+  // CỘT TẦNG LẦU 1: P.07 – P.12 (x ∈ [1110, 1167], tâm x = 1138)
+  'pc-p07': { x: 1128, y: 248, width: 16, height: 16, cluster: 'a' },
+  'cam-p07': { x: 1150, y: 248, width: 16, height: 16, cluster: 'a' },
+  'pc-p08': { x: 1128, y: 280, width: 16, height: 16, cluster: 'a' },
+  'cam-p08': { x: 1150, y: 280, width: 16, height: 16, cluster: 'a' },
+  'pc-p09': { x: 1128, y: 352, width: 16, height: 16, cluster: 'a' },
+  'cam-p09': { x: 1150, y: 352, width: 16, height: 16, cluster: 'a' },
+  'pc-p10': { x: 1128, y: 385, width: 16, height: 16, cluster: 'a' },
+  'cam-p10': { x: 1150, y: 385, width: 16, height: 16, cluster: 'a' },
+  'pc-p11': { x: 1128, y: 457, width: 16, height: 16, cluster: 'a' },
+  'cam-p11': { x: 1150, y: 457, width: 16, height: 16, cluster: 'a' },
+  'pc-p12': { x: 1128, y: 491, width: 16, height: 16, cluster: 'a' },
+  'cam-p12': { x: 1150, y: 491, width: 16, height: 16, cluster: 'a' },
 };
 
 /**
@@ -269,9 +284,9 @@ export function buildTopDownCables(
     }
   }
 
-  // 4. Tuyến Dãy A (VNPT A nối Hub 2, 3, 5, 4 dọc hành lang)
+  // 4. Tuyến Dãy A (VNPT A nối Hub 2, 3, 5, 4 dọc hành lang và rẽ vào các phòng)
   if (fromId.startsWith('gw-vnpt-a') || fromId.startsWith('hub-')) {
-    if (Math.abs(fx - tx) > 15) {
+    if (Math.abs(fx - tx) > 4) {
       return `M ${fx} ${fy} L ${fx} ${ty} L ${tx} ${ty}`;
     }
   }

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useMemo } from 'react';
 import type { LayoutNode, LayoutEdge } from '../../types/network';
 import {
   SCHOOL_IMAGE_DIMS,
@@ -23,14 +23,76 @@ interface NetworkTopDownCanvasProps {
 }
 
 const DEVICE_TYPE_COLORS: Record<string, { bg: string; border: string; text: string; icon: string }> = {
-  gateway: { bg: 'bg-orange-500/90', border: 'border-orange-300 ring-2 ring-orange-500/30', text: 'text-white', icon: '🌐' },
-  router: { bg: 'bg-sky-600/90', border: 'border-sky-300 ring-2 ring-sky-500/30', text: 'text-white', icon: '📡' },
-  switch: { bg: 'bg-emerald-600/90', border: 'border-emerald-300 ring-2 ring-emerald-500/30', text: 'text-white', icon: '🔀' },
-  hub: { bg: 'bg-green-600/90', border: 'border-green-300 ring-2 ring-green-500/30', text: 'text-white', icon: '🔌' },
-  'access-point': { bg: 'bg-purple-600/90', border: 'border-purple-300 ring-2 ring-purple-500/30', text: 'text-white', icon: '📶' },
-  pc: { bg: 'bg-slate-700/90', border: 'border-slate-400 ring-1 ring-slate-500/20', text: 'text-white', icon: '💻' },
-  camera: { bg: 'bg-cyan-700/90', border: 'border-cyan-400 ring-1 ring-cyan-500/20', text: 'text-white', icon: '📷' },
+  gateway: { bg: 'bg-orange-500/95', border: 'border-orange-300 ring-2 ring-orange-500/40 shadow-orange-500/30', text: 'text-white', icon: '🌐' },
+  router: { bg: 'bg-sky-600/95', border: 'border-sky-300 ring-2 ring-sky-500/40 shadow-sky-500/30', text: 'text-white', icon: '📡' },
+  switch: { bg: 'bg-emerald-600/95', border: 'border-emerald-300 ring-2 ring-emerald-500/40 shadow-emerald-500/30', text: 'text-white', icon: '🔀' },
+  hub: { bg: 'bg-green-600/95', border: 'border-green-300 ring-2 ring-green-500/40 shadow-green-500/30', text: 'text-white', icon: '🔌' },
+  'access-point': { bg: 'bg-purple-600/95', border: 'border-purple-300 ring-2 ring-purple-500/40 shadow-purple-500/30', text: 'text-white', icon: '📶' },
+  pc: { bg: 'bg-slate-700/95', border: 'border-slate-400 ring-1 ring-slate-500/30 shadow-slate-500/20', text: 'text-white', icon: '💻' },
+  camera: { bg: 'bg-cyan-700/95', border: 'border-cyan-400 ring-1 ring-cyan-500/30 shadow-cyan-500/20', text: 'text-white', icon: '📷' },
 };
+
+const DEVICE_TYPE_VIETNAMESE: Record<string, string> = {
+  gateway: 'Cổng quang Gateway (VNPT)',
+  router: 'Bộ định tuyến (Router)',
+  hub: 'Bộ chia mạng (Hub)',
+  switch: 'Bộ chuyển mạch (Switch)',
+  'access-point': 'Điểm phát Wi-Fi (WAP)',
+  pc: 'Máy tính trạm (PC)',
+  camera: 'Camera an ninh (CCTV)',
+};
+
+const BUILDING_NAME_MAP: Record<string, string> = {
+  'building-b': 'Dãy B (Tây)',
+  'building-cd': 'Dãy C·D (Bắc)',
+  'building-a': 'Dãy C (Tây Nam)',
+  'building-e': 'Dãy A / Nhà E (Đông)',
+  'building-f': 'Khối Hiệu bộ',
+};
+
+const FLOOR_NAME_MAP: Record<string, string> = {
+  'floor-1': 'Tầng trệt',
+  'floor-2': 'Lầu 1',
+  'floor-3': 'Lầu 2',
+};
+
+// Kích thước kí hiệu nhỏ gọn, thanh thoát cho mặt bằng CAD
+interface SymbolSpec {
+  width: number;
+  height: number;
+  iconSize: string;
+  shape: string;
+  isCluster: boolean;
+  count?: number;
+}
+
+function getDeviceSymbolSpecs(type: string, metadata?: { pcCount?: number }): SymbolSpec {
+  if (type === 'gateway') {
+    return { width: 26, height: 26, iconSize: 'text-[13px]', shape: 'rounded-xl', isCluster: false };
+  }
+  if (type === 'router') {
+    return { width: 22, height: 22, iconSize: 'text-[11px]', shape: 'rounded-lg', isCluster: false };
+  }
+  if (type === 'hub') {
+    return { width: 20, height: 20, iconSize: 'text-[10px]', shape: 'rounded-lg', isCluster: false };
+  }
+  if (type === 'switch') {
+    return { width: 18, height: 18, iconSize: 'text-[9px]', shape: 'rounded-md', isCluster: false };
+  }
+  if (type === 'access-point') {
+    return { width: 20, height: 20, iconSize: 'text-[10px]', shape: 'rounded-full', isCluster: false };
+  }
+  if (type === 'pc') {
+    if (metadata?.pcCount && metadata.pcCount > 1) {
+      return { width: 34, height: 20, iconSize: 'text-[10px]', shape: 'rounded-lg', isCluster: true, count: metadata.pcCount };
+    }
+    return { width: 16, height: 16, iconSize: 'text-[9px]', shape: 'rounded-md', isCluster: false };
+  }
+  if (type === 'camera') {
+    return { width: 16, height: 16, iconSize: 'text-[9px]', shape: 'rounded-full', isCluster: false };
+  }
+  return { width: 18, height: 18, iconSize: 'text-[9px]', shape: 'rounded-md', isCluster: false };
+}
 
 export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
   nodes,
@@ -178,6 +240,15 @@ export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
     }
   };
 
+  // Map tên thiết bị để hiển thị liên kết trong hover card
+  const deviceNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const n of nodes) {
+      map.set(n.id, n.device.label || n.device.code);
+    }
+    return map;
+  }, [nodes]);
+
   return (
     <div
       ref={containerRef}
@@ -210,7 +281,7 @@ export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
           className="absolute inset-0 w-full h-full"
           style={{ width: `${SCHOOL_IMAGE_DIMS.width}px`, height: `${SCHOOL_IMAGE_DIMS.height}px` }}
         >
-          {/* 1. Underlying sodotruong.jpg Blueprint Image */}
+          {/* 1. Underlying Blueprint Image */}
           {showBlueprintImage && (
             <image
               href={SCHOOL_IMAGE_DIMS.imageSrc}
@@ -386,7 +457,7 @@ export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
           </g>
         </svg>
 
-        {/* HTML LAYER: Network Nodes placed at room positions */}
+        {/* HTML LAYER: Compact Network Symbols placed at room positions */}
         <div className="absolute inset-0 pointer-events-none">
           {nodes.map((node) => {
             const isSelected = selectedNodeId === node.id;
@@ -394,18 +465,18 @@ export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
             const isRelated = connectedNodeIds.has(node.id) && !isSelected;
             const isSearchMatch = matchedNodeIds.has(node.id);
 
-            const defaultTheme = { bg: 'bg-slate-700/90', border: 'border-slate-400 ring-1 ring-slate-500/20', text: 'text-white', icon: '📦' };
+            const defaultTheme = { bg: 'bg-slate-700/95', border: 'border-slate-400', text: 'text-white', icon: '📦' };
             const theme = DEVICE_TYPE_COLORS[node.device.type] || defaultTheme;
-            const isCompact = node.device.type === 'pc' || node.device.type === 'camera';
+            const spec = getDeviceSymbolSpecs(node.device.type, node.device.metadata);
 
             const borderClass = isSelected
-              ? 'border-yellow-400 ring-4 ring-yellow-400/50 shadow-lg shadow-yellow-500/40 scale-125 z-40'
+              ? 'border-yellow-400 ring-4 ring-yellow-400/60 shadow-lg shadow-yellow-500/50 scale-125 z-40'
               : isSearchMatch
-                ? 'border-amber-400 ring-4 ring-amber-400/40 shadow-lg shadow-amber-500/30 animate-pulse z-30'
+                ? 'border-amber-400 ring-4 ring-amber-400/50 shadow-lg shadow-amber-500/40 animate-pulse z-30'
                 : isHovered
-                  ? 'border-white ring-2 ring-white/50 shadow-md scale-110 z-30'
+                  ? 'border-white ring-2 ring-white/70 shadow-lg scale-125 z-30'
                   : isRelated
-                    ? 'border-cyan-300 ring-2 ring-cyan-400/30 z-20'
+                    ? 'border-cyan-300 ring-2 ring-cyan-400/40 z-20'
                     : `${theme.border} z-10`;
 
             return (
@@ -413,10 +484,10 @@ export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
                 key={node.id}
                 style={{
                   position: 'absolute',
-                  left: `${node.x - node.width / 2}px`,
-                  top: `${node.y - node.height / 2}px`,
-                  width: `${node.width}px`,
-                  height: `${node.height}px`,
+                  left: `${node.x - spec.width / 2}px`,
+                  top: `${node.y - spec.height / 2}px`,
+                  width: `${spec.width}px`,
+                  height: `${spec.height}px`,
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -425,53 +496,126 @@ export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
                 onDoubleClick={(e) => handleDoubleClickNode(node, e)}
                 onMouseEnter={() => setHoveredNode(node)}
                 onMouseLeave={() => setHoveredNode(null)}
-                className={`pointer-events-auto cursor-pointer rounded-lg border flex items-center justify-between px-1.5 py-0.5 backdrop-blur-md shadow-xs transition-all duration-150 ${theme.bg} ${theme.text} ${borderClass}`}
+                className={`pointer-events-auto cursor-pointer border flex items-center justify-center backdrop-blur-md transition-all duration-150 ${spec.shape} ${theme.bg} ${theme.text} ${borderClass}`}
+                title={`${node.device.label} (${node.device.code})`}
               >
-                <div className="flex items-center gap-1 min-w-0">
-                  <span className="text-[11px] shrink-0">{theme.icon}</span>
-                  <span className="font-mono font-bold text-[9px] tracking-tight truncate">
-                    {node.device.code}
-                  </span>
-                </div>
+                {/* Icon biểu tượng nhỏ gọn */}
+                <span className={`${spec.iconSize} leading-none select-none drop-shadow-xs`}>
+                  {theme.icon}
+                </span>
 
-                {/* Status Dot */}
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#10b981] animate-pulse" />
-                  {!isCompact && (
-                    <span className="text-[8px] font-mono text-white/80 hidden sm:inline">
-                      1G
-                    </span>
-                  )}
-                </div>
+                {/* Hiển thị số lượng máy nếu là cụm phòng máy */}
+                {spec.isCluster && spec.count && (
+                  <span className="text-[9px] font-mono font-bold tracking-tighter ml-0.5 leading-none">
+                    {spec.count}
+                  </span>
+                )}
+
+                {/* Chấm trạng thái nhỏ */}
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_5px_#10b981]" />
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Floating Tooltip */}
-      {hoveredNode && !selectedNodeId && (
+      {/* Floating Rich Tooltip - Hiện thông tin chi tiết khi trỏ chuột vào */}
+      {hoveredNode && (
         <div
           style={{
             position: 'fixed',
-            left: `${mousePos.x + 14}px`,
-            top: `${mousePos.y + 14}px`,
+            left: `${
+              typeof window !== 'undefined' && mousePos.x + 300 > window.innerWidth
+                ? Math.max(12, mousePos.x - 290)
+                : mousePos.x + 16
+            }px`,
+            top: `${
+              typeof window !== 'undefined' && mousePos.y + 240 > window.innerHeight
+                ? Math.max(12, mousePos.y - 200)
+                : mousePos.y + 16
+            }px`,
             pointerEvents: 'none',
-            zIndex: 60,
+            zIndex: 70,
+            maxWidth: '300px',
           }}
-          className="px-3 py-2 rounded-xl bg-zinc-900/95 text-white backdrop-blur-md border border-zinc-700/80 shadow-2xl text-xs space-y-1 animate-in fade-in duration-100"
+          className="p-3 rounded-xl bg-zinc-900/95 text-white backdrop-blur-xl border border-zinc-700/80 shadow-2xl text-xs space-y-2 animate-in fade-in duration-100"
         >
-          <div className="font-bold flex items-center gap-1.5">
-            <span>{hoveredNode.device.label}</span>
-            <span className="font-mono text-[10px] text-zinc-400">({hoveredNode.device.code})</span>
+          {/* Header */}
+          <div className="flex items-start justify-between gap-2 border-b border-zinc-800 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="text-base p-1 rounded-lg bg-zinc-800 border border-zinc-700">
+                {DEVICE_TYPE_COLORS[hoveredNode.device.type]?.icon || '📦'}
+              </span>
+              <div>
+                <div className="font-bold text-sm text-zinc-100 leading-tight">
+                  {hoveredNode.device.label}
+                </div>
+                <div className="font-mono text-[10px] text-zinc-400">
+                  {hoveredNode.device.code} · {DEVICE_TYPE_VIETNAMESE[hoveredNode.device.type] || hoveredNode.device.type}
+                </div>
+              </div>
+            </div>
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Online
+            </span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            {hoveredNode.device.location.roomName || hoveredNode.device.location.roomId || 'Hạ tầng mạng trường'}
+
+          {/* Vị trí mặt bằng */}
+          <div className="space-y-1 text-[11px] text-zinc-300">
+            <div className="flex items-center gap-1.5">
+              <span className="text-zinc-500">📍 Phòng/Khu vực:</span>
+              <span className="font-semibold text-zinc-200">
+                {hoveredNode.device.location.roomName || hoveredNode.device.location.roomId || 'Hạ tầng mạng'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-zinc-500">🏢 Dãy & Tầng:</span>
+              <span>
+                {BUILDING_NAME_MAP[hoveredNode.device.location.buildingId] || hoveredNode.device.location.buildingId}
+                {' · '}
+                {FLOOR_NAME_MAP[hoveredNode.device.location.floorId] || hoveredNode.device.location.floorId}
+              </span>
+            </div>
           </div>
-          <div className="text-[10px] font-mono text-emerald-400 flex items-center gap-2">
-            <span>IP: {hoveredNode.ip || 'DHCP'}</span>
-            <span>•</span>
-            <span>Mặt bằng sodotruong.jpg</span>
+
+          {/* Thông số mạng */}
+          <div className="bg-zinc-950/60 p-2 rounded-lg border border-zinc-800/80 space-y-1 text-[11px]">
+            <div className="flex justify-between items-center">
+              <span className="text-zinc-400">Địa chỉ IP:</span>
+              <span className="font-mono font-bold text-emerald-400">
+                {hoveredNode.ip || hoveredNode.device.metadata?.ipRange || 'DHCP'}
+              </span>
+            </div>
+
+            {hoveredNode.device.metadata?.pcCount && (
+              <div className="flex justify-between items-center">
+                <span className="text-zinc-400">Số lượng máy trạm:</span>
+                <span className="font-semibold text-sky-400">
+                  {hoveredNode.device.metadata.pcCount} PC kết nối
+                </span>
+              </div>
+            )}
+
+            {hoveredNode.device.connectedDeviceIds.length > 0 && (
+              <div className="pt-1 border-t border-zinc-800/80 text-[10px] text-zinc-400">
+                <span className="text-zinc-500">Liên kết trực tiếp: </span>
+                <span className="text-zinc-300">
+                  {hoveredNode.device.connectedDeviceIds
+                    .slice(0, 3)
+                    .map((id) => deviceNameMap.get(id) || id)
+                    .join(', ')}
+                  {hoveredNode.device.connectedDeviceIds.length > 3 &&
+                    ` +${hoveredNode.device.connectedDeviceIds.length - 3} thiết bị`}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Hint footer */}
+          <div className="text-[10px] text-zinc-400 flex items-center justify-between pt-0.5">
+            <span>💡 Click để ghim xem 3D</span>
+            <span className="text-zinc-500">Double click: Focus</span>
           </div>
         </div>
       )}
@@ -479,7 +623,7 @@ export const NetworkTopDownCanvas: React.FC<NetworkTopDownCanvasProps> = ({
       {/* Map Legend Watermark in Bottom Left */}
       <div className="absolute bottom-3 left-4 pointer-events-none select-none text-[11px] font-mono text-zinc-400/80 bg-black/40 backdrop-blur-md px-3 py-1 rounded-lg border border-zinc-700/40 flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-emerald-400" />
-        <span>Bản đồ mạng mặt bằng 2D · Khung chiếu gốc sodotruong.jpg (1280 × 960 px)</span>
+        <span>Bản đồ mạng mặt bằng 2D · Khung chiếu gốc (1280 × 960 px)</span>
       </div>
     </div>
   );

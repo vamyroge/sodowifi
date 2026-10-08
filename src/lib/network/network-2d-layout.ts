@@ -142,23 +142,28 @@ export function buildTopologyLayout(cluster: NetworkClusterId): TopologyLayout {
     setPos('cam-p24', offsetX + 510, offsetY + 420, 110, 52, 3, 'b-cd');
 
     // Under Hub 1: Routers PM1, PM2, Thư viện, TH Lý
-    setPos('r-cd-pm1', offsetX + 650, offsetY + 350, 180, 64, 3, 'b-cd');
-    setPos('r-cd-pm2', offsetX + 850, offsetY + 350, 180, 64, 3, 'b-cd');
-    setPos('pc-thu-vien', offsetX + 1040, offsetY + 350, 130, 56, 3, 'b-cd');
-    setPos('pc-th-ly', offsetX + 1040, offsetY + 430, 130, 56, 3, 'b-cd');
+    setPos('r-cd-pm1', offsetX + 720, offsetY + 350, 180, 64, 3, 'b-cd');
+    setPos('r-cd-pm2', offsetX + 1150, offsetY + 350, 180, 64, 3, 'b-cd');
+    setPos('pc-thu-vien', offsetX + 1440, offsetY + 350, 130, 56, 3, 'b-cd');
+    setPos('pc-th-ly', offsetX + 1440, offsetY + 430, 130, 56, 3, 'b-cd');
 
     // Tier 4: Switches under PM1 & PM2
     setPos('sw-pm1-1', offsetX + 580, offsetY + 490, 130, 56, 4, 'b-cd');
-    setPos('sw-pm1-2', offsetX + 650, offsetY + 570, 130, 56, 4, 'b-cd');
-    setPos('sw-pm1-3', offsetX + 720, offsetY + 490, 130, 56, 4, 'b-cd');
+    setPos('sw-pm1-2', offsetX + 720, offsetY + 490, 130, 56, 4, 'b-cd');
+    setPos('sw-pm1-3', offsetX + 860, offsetY + 490, 130, 56, 4, 'b-cd');
 
-    setPos('sw-pm2-1', offsetX + 810, offsetY + 490, 130, 56, 4, 'b-cd');
-    setPos('sw-pm2-2', offsetX + 880, offsetY + 570, 130, 56, 4, 'b-cd');
-    setPos('sw-pm2-3', offsetX + 950, offsetY + 490, 130, 56, 4, 'b-cd');
+    setPos('sw-pm2-1', offsetX + 1010, offsetY + 490, 130, 56, 4, 'b-cd');
+    setPos('sw-pm2-2', offsetX + 1150, offsetY + 490, 130, 56, 4, 'b-cd');
+    setPos('sw-pm2-3', offsetX + 1290, offsetY + 490, 130, 56, 4, 'b-cd');
 
-    // Tier 5: Clusters 37 PC PM1 & PM2
-    setPos('pc-pm1-cluster', offsetX + 650, offsetY + 670, 180, 60, 5, 'b-cd');
-    setPos('pc-pm2-cluster', offsetX + 880, offsetY + 670, 180, 60, 5, 'b-cd');
+    // Tier 5: Cụm máy tính từng switch trong PM1 & PM2
+    setPos('pc-pm1-c1', offsetX + 580, offsetY + 590, 130, 56, 5, 'b-cd');
+    setPos('pc-pm1-c2', offsetX + 720, offsetY + 590, 130, 56, 5, 'b-cd');
+    setPos('pc-pm1-c3', offsetX + 860, offsetY + 590, 130, 56, 5, 'b-cd');
+
+    setPos('pc-pm2-c1', offsetX + 1010, offsetY + 590, 130, 56, 5, 'b-cd');
+    setPos('pc-pm2-c2', offsetX + 1150, offsetY + 590, 130, 56, 5, 'b-cd');
+    setPos('pc-pm2-c3', offsetX + 1290, offsetY + 590, 130, 56, 5, 'b-cd');
   };
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -218,10 +223,10 @@ export function buildTopologyLayout(cluster: NetworkClusterId): TopologyLayout {
   } else if (cluster === 'a') {
     buildClusterA(50, 30);
   } else {
-    // 'all': Top WAN Internet Cloud + Left Cluster B & CD + Right Cluster A
-    setPos('wan-isp', 1180, 40, 260, 72, 0, 'wan');
+    // 'all': Top WAN Internet Cloud + Left Cluster B & CD + Right Cluster A (tách biệt rõ ràng, không bị dính)
+    setPos('wan-isp', 1425, 40, 260, 72, 0, 'wan');
     buildClusterB_CD(50, 160);
-    buildClusterA(1260, 160);
+    buildClusterA(1800, 160);
   }
 
   // Build LayoutNode objects

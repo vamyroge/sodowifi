@@ -87,5 +87,31 @@ describe('Network 2D Topology Layout Engine', () => {
     expect(gwB!.x).toBeGreaterThan(300);
     expect(gwB!.x).toBeLessThan(600);
     expect(gwA!.x).toBeGreaterThan(1000);
+
+    // Verify PM1 and PM2 each have per-switch PC clusters
+    expect(topdown.nodes.some((n) => n.id === 'pc-pm1-c1')).toBe(true);
+    expect(topdown.nodes.some((n) => n.id === 'pc-pm1-c2')).toBe(true);
+    expect(topdown.nodes.some((n) => n.id === 'pc-pm1-c3')).toBe(true);
+    expect(topdown.nodes.some((n) => n.id === 'pc-pm2-c1')).toBe(true);
+    expect(topdown.nodes.some((n) => n.id === 'pc-pm2-c2')).toBe(true);
+    expect(topdown.nodes.some((n) => n.id === 'pc-pm2-c3')).toBe(true);
+
+    // Verify Dãy A ground floor rooms (P.01 - P.06) are located in the Ground Floor Column (x < 1110)
+    const pcP01 = topdown.nodes.find((n) => n.id === 'pc-p01');
+    const pcP06 = topdown.nodes.find((n) => n.id === 'pc-p06');
+    expect(pcP01).toBeDefined();
+    expect(pcP06).toBeDefined();
+    expect(pcP01!.x).toBeLessThan(1110);
+    expect(pcP01!.x).toBeGreaterThan(1052);
+    expect(pcP06!.x).toBeLessThan(1110);
+    expect(pcP06!.x).toBeGreaterThan(1052);
+
+    // Verify Dãy A upper floor rooms (P.07 - P.12) are located in Upper Floor Column (x > 1110)
+    const pcP07 = topdown.nodes.find((n) => n.id === 'pc-p07');
+    const pcP12 = topdown.nodes.find((n) => n.id === 'pc-p12');
+    expect(pcP07).toBeDefined();
+    expect(pcP12).toBeDefined();
+    expect(pcP07!.x).toBeGreaterThan(1110);
+    expect(pcP12!.x).toBeGreaterThan(1110);
   });
 });

@@ -53,7 +53,7 @@ export const NetworkToolbar: React.FC<NetworkToolbarProps> = ({
         <div className="flex items-center p-1 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/70 dark:border-zinc-700/70 shadow-xs">
           <button
             onClick={() => onMapModeChange('topdown')}
-            title="Xem sơ đồ mạng theo góc nhìn từ trên xuống dựa trên khung mặt bằng sodotruong.jpg"
+            title="Xem sơ đồ mạng theo góc nhìn từ trên xuống trên mặt bằng trường"
             className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
               mapMode === 'topdown'
                 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs'
@@ -61,7 +61,7 @@ export const NetworkToolbar: React.FC<NetworkToolbarProps> = ({
             }`}
           >
             <span>🗺️</span>
-            <span>Mặt bằng trường (sodotruong.jpg)</span>
+            <span>Mặt bằng trường</span>
             <span className="text-[9px] px-1 py-0.2 bg-white/20 rounded font-mono font-semibold">
               Top-down
             </span>
@@ -86,7 +86,7 @@ export const NetworkToolbar: React.FC<NetworkToolbarProps> = ({
           <div className="hidden sm:flex items-center gap-1 p-0.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-700/60">
             <button
               onClick={onToggleBlueprintImage}
-              title="Bật/Tắt ảnh bản vẽ gốc sodotruong.jpg làm lớp nền"
+              title="Bật/Tắt ảnh bản vẽ mặt bằng gốc làm lớp nền"
               className={`px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1 ${
                 showBlueprintImage
                   ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-xs font-semibold'
