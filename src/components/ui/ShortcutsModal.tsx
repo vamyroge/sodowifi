@@ -14,7 +14,8 @@ export function ShortcutsModal() {
     { key: '1 / 2 / 3', desc: 'Chọn nhanh tầng 1, tầng 2 hoặc tầng 3' },
     { key: '0 / A', desc: 'Hiển thị tất cả các tầng' },
     { key: 'H', desc: 'Ẩn / hiện giao diện điều khiển (Zen mode)' },
-    { key: 'Esc', desc: 'Bỏ chọn đối tượng đang chọn' },
+    { key: 'M', desc: 'Mở / đóng Sơ đồ mạng 2D (Topology)' },
+    { key: 'Esc', desc: 'Bỏ chọn đối tượng / Đóng sơ đồ 2D' },
   ];
 
   return (

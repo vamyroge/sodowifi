@@ -10,6 +10,7 @@ import { HoverTooltip } from './components/ui/HoverTooltip';
 import { ShortcutsModal } from './components/ui/ShortcutsModal';
 import { QuickSearchModal } from './components/ui/QuickSearchModal';
 import { LoadingScreen } from './components/ui/LoadingScreen';
+import { Network2DView } from './components/network/Network2DView';
 import { useTwinStore } from './store/twin-store';
 
 export function App() {
@@ -22,6 +23,7 @@ export function App() {
   const setFloorFilter = useTwinStore((s) => s.setFloorFilter);
   const toggleShortcuts = useTwinStore((s) => s.toggleShortcuts);
   const toggleSearchModal = useTwinStore((s) => s.toggleSearchModal);
+  const toggleTopologyModal = useTwinStore((s) => s.toggleTopologyModal);
 
   // Global Keyboard Shortcuts
   useEffect(() => {
@@ -71,6 +73,9 @@ export function App() {
         case 'escape':
           clearSelection();
           break;
+        case 'm':
+          toggleTopologyModal();
+          break;
         case '?':
           toggleShortcuts();
           break;
@@ -79,7 +84,7 @@ export function App() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [resetCamera, focusSelected, toggleExplode, toggleUi, setFloorFilter, clearSelection, toggleShortcuts]);
+  }, [resetCamera, focusSelected, toggleExplode, toggleUi, setFloorFilter, clearSelection, toggleShortcuts, toggleSearchModal, toggleTopologyModal]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#eef0f2] dark:bg-zinc-950 font-sans antialiased">
@@ -123,6 +128,9 @@ export function App() {
           Hiện giao diện (H)
         </button>
       )}
+
+      {/* Dedicated 2D Network Topology View */}
+      <Network2DView />
 
       {/* Initial Loading Screen */}
       <LoadingScreen />

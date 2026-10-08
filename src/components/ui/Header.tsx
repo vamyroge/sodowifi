@@ -9,6 +9,8 @@ export function Header() {
   const networkLayerVisible = useTwinStore((s) => s.networkLayerVisible);
   const toggleNetworkLayer = useTwinStore((s) => s.toggleNetworkLayer);
   const toggleSearchModal = useTwinStore((s) => s.toggleSearchModal);
+  const showTopologyModal = useTwinStore((s) => s.showTopologyModal);
+  const toggleTopologyModal = useTwinStore((s) => s.toggleTopologyModal);
 
   return (
     <header className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 z-20 flex items-center justify-between pointer-events-none gap-2">
@@ -60,6 +62,23 @@ export function Header() {
               networkLayerVisible ? 'bg-cyan-300 shadow-[0_0_8px_#22d3ee] animate-pulse' : 'bg-zinc-400'
             }`}
           />
+        </button>
+
+        {/* Nút SƠ ĐỒ MẠNG 2D MỚI */}
+        <button
+          onClick={() => toggleTopologyModal(true)}
+          title="Mở Sơ đồ mạng 2D trực quan chuyên nghiệp (Network Topology)"
+          className={`px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-xl transition-all duration-200 flex items-center gap-2 shrink-0 shadow-sm border ${
+            showTopologyModal
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-blue-400 ring-2 ring-blue-400/40 shadow-blue-500/25'
+              : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-zinc-800 dark:to-zinc-850 text-blue-700 dark:text-blue-300 border-blue-200/80 dark:border-zinc-700 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-zinc-750 dark:hover:to-zinc-750 hover:scale-[1.02] active:scale-[0.98]'
+          }`}
+        >
+          <span className="text-base sm:text-lg group-hover:rotate-12 transition-transform">🌐</span>
+          <span className="tracking-wide">Sơ đồ mạng 2D</span>
+          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-blue-600 text-white dark:bg-blue-500 shadow-xs">
+            2D
+          </span>
         </button>
 
         {/* Day / Night / Evening toggle */}

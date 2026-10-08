@@ -15,3 +15,16 @@ body,
   user-select: none;
   -webkit-user-select: none;
 }
+
+@keyframes networkCablePulse {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.network-cable-flow {
+  animation: networkCablePulse 1.8s linear infinite;
+}

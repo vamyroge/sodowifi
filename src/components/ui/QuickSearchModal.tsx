@@ -21,6 +21,7 @@ export function QuickSearchModal() {
   const selectFacility = useTwinStore((s) => s.selectFacility);
   const selectNetworkDevice = useTwinStore((s) => s.selectNetworkDevice);
   const setCameraMode = useTwinStore((s) => s.setCameraMode);
+  const toggleTopologyModal = useTwinStore((s) => s.toggleTopologyModal);
 
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -101,8 +102,20 @@ export function QuickSearchModal() {
       });
     }
 
+    // 5. Tiện ích Sơ đồ mạng 2D
+    items.unshift({
+      id: 'tool-network-topology-2d',
+      title: 'Sơ đồ mạng 2D (Network Topology)',
+      category: 'Thiết bị mạng',
+      icon: '🌐',
+      sub: 'Mở sơ đồ cấu trúc mạng 2D toàn trường (Interactive Topology)',
+      action: () => {
+        toggleTopologyModal(true);
+      },
+    });
+
     return items;
-  }, [selectRoom, selectBuilding, selectFacility, selectNetworkDevice, setCameraMode]);
+  }, [selectRoom, selectBuilding, selectFacility, selectNetworkDevice, setCameraMode, toggleTopologyModal]);
 
   // Bộ lọc tìm kiếm nhanh không dấu & có dấu
   const filtered = useMemo(() => {

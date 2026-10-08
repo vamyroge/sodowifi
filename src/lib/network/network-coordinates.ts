@@ -327,7 +327,7 @@ export function resolveConnections(
     const p2 = devicePositions.get(conn.toDeviceId);
     if (!p1 || !p2) continue;
 
-    let points: [number, number, number][] = [];
+    let points: [number, number, number][];
 
     // Kiểm tra nếu là kết nối tới máy tính phòng học (PC-P01..12 hoặc PC-P19..24)
     if (conn.toDeviceId.startsWith('pc-p') || conn.toDeviceId.startsWith('cam-p')) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { useTwinStore } from '../../store/twin-store';
 import { getSceneIndex } from '../../lib/3d/scene';
@@ -95,9 +95,9 @@ interface DeviceMeshProps {
   isHovered: boolean;
   isRelatedToSelection: boolean;
   isTransparent: boolean;
-  onClick: (e: any) => void;
-  onPointerOver: (e: any) => void;
-  onPointerOut: (e: any) => void;
+  onClick: (e: ThreeEvent<MouseEvent>) => void;
+  onPointerOver: (e: ThreeEvent<PointerEvent>) => void;
+  onPointerOut: (e: ThreeEvent<PointerEvent>) => void;
 }
 
 const DeviceVisual: React.FC<DeviceMeshProps> = React.memo(({

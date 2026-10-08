@@ -56,3 +56,43 @@ export interface NetworkTopology {
   devices: NetworkDevice[];
   connections: NetworkConnection[];
 }
+
+export type NetworkClusterId = 'all' | 'b-cd' | 'a';
+
+export type DeviceOperationalStatus = 'online' | 'warning' | 'offline';
+
+export interface LayoutNode {
+  id: string;
+  device: NetworkDevice;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  tier: number;
+  cluster: 'b-cd' | 'a' | 'wan';
+  status: DeviceOperationalStatus;
+  ip?: string;
+}
+
+export interface LayoutEdge {
+  id: string;
+  fromId: string;
+  toId: string;
+  medium: CableMedium;
+  path: string;
+  cluster: 'b-cd' | 'a' | 'wan';
+  status: DeviceOperationalStatus;
+}
+
+export interface TopologyLayout {
+  nodes: LayoutNode[];
+  edges: LayoutEdge[];
+  bounds: {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+    width: number;
+    height: number;
+  };
+}

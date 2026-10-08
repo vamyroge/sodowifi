@@ -13,6 +13,7 @@ export function NavigationPanel() {
   const selectFacility = useTwinStore((s) => s.selectFacility);
   const clearSelection = useTwinStore((s) => s.clearSelection);
   const resetCamera = useTwinStore((s) => s.resetCamera);
+  const toggleTopologyModal = useTwinStore((s) => s.toggleTopologyModal);
 
   if (isCollapsed) {
     return (
@@ -176,6 +177,13 @@ export function NavigationPanel() {
               className="w-full py-1.5 px-3 mt-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 font-medium text-[11px] transition-all"
             >
               Toàn cảnh khuôn viên
+            </button>
+            <button
+              onClick={() => toggleTopologyModal(true)}
+              className="w-full py-1.5 px-3 mt-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 font-semibold text-[11px] transition-all flex items-center justify-center gap-1.5 shadow-xs"
+            >
+              <span>🌐</span>
+              <span>Sơ đồ mạng 2D (Topology)</span>
             </button>
           </div>
         )}
