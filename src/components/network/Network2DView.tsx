@@ -2,9 +2,11 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { useTwinStore } from '../../store/twin-store';
 import type { NetworkClusterId } from '../../types/network';
 import { buildTopologyLayout } from '../../lib/network/network-2d-layout';
+import { buildTopDownLayout } from '../../lib/network/network-topdown-layout';
 import { NetworkHeader } from './NetworkHeader';
 import { NetworkToolbar } from './NetworkToolbar';
 import { NetworkCanvas } from './NetworkCanvas';
+import { NetworkTopDownCanvas } from './NetworkTopDownCanvas';
 import { NetworkInspector } from './NetworkInspector';
 import { NetworkLegend } from './NetworkLegend';
 
@@ -13,6 +15,8 @@ export const Network2DView: React.FC = () => {
   const toggleTopologyModal = useTwinStore((s) => s.toggleTopologyModal);
   const selection = useTwinStore((s) => s.selection);
 
+  // Default to 'topdown' as requested by user ("vẽ sơ đồ mạng theo góc nhìn từ trên xuống dựa theo khung sodotruong.jpg")
+  const [mapMode, setMapMode] = useState<'topdown' | 'hierarchy'>('topdown');
   const [currentCluster, setCurrentCluster] = useState<NetworkClusterId>('all');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [scale, setScale] = useState(0.85);
@@ -20,6 +24,10 @@ export const Network2DView: React.FC = () => {
   const [showDataFlow, setShowDataFlow] = useState(true);
   const [showLegend, setShowLegend] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Top-down blueprint layers
+  const [showBlueprintImage, setShowBlueprintImage] = useState(true);
+  const [showArchitectureOverlay, setShowArchitectureOverlay] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -30,10 +38,18 @@ export const Network2DView: React.FC = () => {
     }
   }, [selection.networkDeviceId]);
 
-  // Build topology layout based on current cluster
-  const layout = useMemo(() => {
+  // Top-down layout (sodotruong.jpg coordinates 1280x960)
+  const topdownLayout = useMemo(() => {
+    return buildTopDownLayout(currentCluster);
+  }, [currentCluster]);
+
+  // Logical hierarchy layout
+  const hierarchyLayout = useMemo(() => {
     return buildTopologyLayout(currentCluster);
   }, [currentCluster]);
+
+  // Current active layout
+  const activeLayout = mapMode === 'topdown' ? topdownLayout : hierarchyLayout;
 
   // Fit view calculation
   const handleFitView = useCallback(() => {
@@ -41,45 +57,42 @@ export const Network2DView: React.FC = () => {
     const { clientWidth, clientHeight } = containerRef.current;
     if (clientWidth === 0 || clientHeight === 0) return;
 
-    // Available canvas area (subtracting approximate header and toolbar height)
     const availableW = clientWidth;
-    const availableH = Math.max(clientHeight - 120, 300);
+    const availableH = Math.max(clientHeight - 110, 300);
 
-    const contentW = layout.bounds.width;
-    const contentH = layout.bounds.height;
+    const bounds = activeLayout.bounds;
+    const contentW = bounds.width;
+    const contentH = bounds.height;
 
-    // Margin scale
-    const scaleX = (availableW - 80) / contentW;
-    const scaleY = (availableH - 80) / contentH;
-    const fitScale = Math.min(Math.max(Math.min(scaleX, scaleY), 0.3), 1.4);
+    const scaleX = (availableW - 60) / contentW;
+    const scaleY = (availableH - 60) / contentH;
+    const fitScale = Math.min(Math.max(Math.min(scaleX, scaleY), 0.25), 1.5);
 
     const centerX = availableW / 2;
     const centerY = availableH / 2;
-    const contentCenterX = (layout.bounds.minX + layout.bounds.maxX) / 2;
-    const contentCenterY = (layout.bounds.minY + layout.bounds.maxY) / 2;
+    const contentCenterX = (bounds.minX + bounds.maxX) / 2;
+    const contentCenterY = (bounds.minY + bounds.maxY) / 2;
 
     const fitPanX = centerX - contentCenterX * fitScale;
     const fitPanY = centerY - contentCenterY * fitScale;
 
     setScale(fitScale);
     setPan({ x: fitPanX, y: fitPanY });
-  }, [layout]);
+  }, [activeLayout]);
 
-  // Auto fit when cluster changes or modal opens
+  // Auto fit when cluster changes, map mode changes, or modal opens
   useEffect(() => {
     if (showTopologyModal) {
-      // Small timeout to ensure DOM rect is ready
       const timer = setTimeout(() => {
         handleFitView();
-      }, 50);
+      }, 60);
       return () => clearTimeout(timer);
     }
-  }, [currentCluster, showTopologyModal, handleFitView]);
+  }, [currentCluster, mapMode, showTopologyModal, handleFitView]);
 
-  // Reset scale to 100%
   const handleResetView = () => {
     setScale(1.0);
-    setPan({ x: 50, y: 50 });
+    setPan({ x: 40, y: 40 });
   };
 
   const handleZoomIn = () => {
@@ -96,7 +109,7 @@ export const Network2DView: React.FC = () => {
     if (!searchQuery.trim()) return matched;
 
     const query = searchQuery.toLowerCase().trim();
-    for (const node of layout.nodes) {
+    for (const node of activeLayout.nodes) {
       const dev = node.device;
       const matchLabel = dev.label.toLowerCase().includes(query);
       const matchCode = dev.code.toLowerCase().includes(query);
@@ -110,14 +123,13 @@ export const Network2DView: React.FC = () => {
       }
     }
     return matched;
-  }, [searchQuery, layout.nodes]);
+  }, [searchQuery, activeLayout.nodes]);
 
   // Keyboard controls
   useEffect(() => {
     if (!showTopologyModal) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // If typing in input, ignore shortcuts except Escape
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
         if (e.key === 'Escape') {
           (e.target as HTMLElement).blur();
@@ -158,7 +170,7 @@ export const Network2DView: React.FC = () => {
   if (!showTopologyModal) return null;
 
   const selectedNode = selectedNodeId
-    ? layout.nodes.find((n) => n.id === selectedNodeId) || null
+    ? activeLayout.nodes.find((n) => n.id === selectedNodeId) || null
     : null;
 
   return (
@@ -169,11 +181,16 @@ export const Network2DView: React.FC = () => {
       {/* 1. HEADER */}
       <NetworkHeader
         onBackTo3D={() => toggleTopologyModal(false)}
-        totalDevicesCount={layout.nodes.length}
+        totalDevicesCount={activeLayout.nodes.length}
       />
 
       {/* 2. TOOLBAR */}
       <NetworkToolbar
+        mapMode={mapMode}
+        onMapModeChange={(m) => {
+          setMapMode(m);
+          setSelectedNodeId(null);
+        }}
         currentCluster={currentCluster}
         onClusterChange={(c) => {
           setCurrentCluster(c);
@@ -191,24 +208,49 @@ export const Network2DView: React.FC = () => {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         matchCount={matchedNodeIds.size}
+        showBlueprintImage={showBlueprintImage}
+        onToggleBlueprintImage={() => setShowBlueprintImage((v) => !v)}
+        showArchitectureOverlay={showArchitectureOverlay}
+        onToggleArchitectureOverlay={() => setShowArchitectureOverlay((v) => !v)}
       />
 
       {/* 3. MAIN WORKSPACE: CANVAS + FLOATING INSPECTOR */}
       <div className="relative flex-1 overflow-hidden">
-        {/* Canvas with Pan, Zoom, Nodes, and SVG Edges */}
-        <NetworkCanvas
-          layout={layout}
-          selectedNodeId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
-          showDataFlow={showDataFlow}
-          matchedNodeIds={matchedNodeIds}
-          scale={scale}
-          pan={pan}
-          onTransformChange={(newScale, newPan) => {
-            setScale(newScale);
-            setPan(newPan);
-          }}
-        />
+        {mapMode === 'topdown' ? (
+          /* Top-Down Master Plan Canvas (sodotruong.jpg) */
+          <NetworkTopDownCanvas
+            nodes={topdownLayout.nodes}
+            edges={topdownLayout.edges}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={setSelectedNodeId}
+            showDataFlow={showDataFlow}
+            matchedNodeIds={matchedNodeIds}
+            scale={scale}
+            pan={pan}
+            onTransformChange={(newScale, newPan) => {
+              setScale(newScale);
+              setPan(newPan);
+            }}
+            showBlueprintImage={showBlueprintImage}
+            blueprintOpacity={0.65}
+            showArchitectureOverlay={showArchitectureOverlay}
+          />
+        ) : (
+          /* Logical Hierarchy Topology Canvas */
+          <NetworkCanvas
+            layout={hierarchyLayout}
+            selectedNodeId={selectedNodeId}
+            onSelectNode={setSelectedNodeId}
+            showDataFlow={showDataFlow}
+            matchedNodeIds={matchedNodeIds}
+            scale={scale}
+            pan={pan}
+            onTransformChange={(newScale, newPan) => {
+              setScale(newScale);
+              setPan(newPan);
+            }}
+          />
+        )}
 
         {/* Floating Right Inspector Panel */}
         {selectedNode && (
@@ -218,11 +260,10 @@ export const Network2DView: React.FC = () => {
               onClose={() => setSelectedNodeId(null)}
               onSelectNodeById={(id) => {
                 setSelectedNodeId(id);
-                // Also center view to node if on canvas
-                const targetNode = layout.nodes.find((n) => n.id === id);
+                const targetNode = activeLayout.nodes.find((n) => n.id === id);
                 if (targetNode && containerRef.current) {
                   const rect = containerRef.current.getBoundingClientRect();
-                  const targetScale = Math.max(scale, 0.9);
+                  const targetScale = Math.max(scale, 1.0);
                   setPan({
                     x: rect.width / 2 - targetNode.x * targetScale,
                     y: rect.height / 2 - targetNode.y * targetScale,

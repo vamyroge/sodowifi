@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildTopologyLayout, getDeviceIp } from '../lib/network/network-2d-layout';
+import { buildTopDownLayout } from '../lib/network/network-topdown-layout';
 import { NETWORK_TOPOLOGY } from '../data/network/network-topology';
 
 describe('Network 2D Topology Layout Engine', () => {
@@ -65,5 +66,26 @@ describe('Network 2D Topology Layout Engine', () => {
       expect(typeof ip).toBe('string');
       expect(ip.length).toBeGreaterThan(0);
     }
+  });
+
+  it('generates valid Top-Down layout matching sodotruong.jpg (1280x960 bounds)', () => {
+    const topdown = buildTopDownLayout('all');
+    expect(topdown.bounds.width).toBe(1280);
+    expect(topdown.bounds.height).toBe(960);
+    expect(topdown.nodes.length).toBeGreaterThan(30);
+    expect(topdown.edges.length).toBeGreaterThan(20);
+
+    // Verify key devices placed within realistic bounds
+    const gwB = topdown.nodes.find((n) => n.id === 'gw-vnpt-b');
+    const gwA = topdown.nodes.find((n) => n.id === 'gw-vnpt-a');
+    const hub1 = topdown.nodes.find((n) => n.id === 'hub-1');
+
+    expect(gwB).toBeDefined();
+    expect(gwA).toBeDefined();
+    expect(hub1).toBeDefined();
+
+    expect(gwB!.x).toBeGreaterThan(300);
+    expect(gwB!.x).toBeLessThan(600);
+    expect(gwA!.x).toBeGreaterThan(1000);
   });
 });
